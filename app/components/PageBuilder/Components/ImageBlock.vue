@@ -1,19 +1,24 @@
 <template>
-  <div class="relative" :style="componentStyles">
-    <div v-if="isEditing" class="absolute inset-0 bg-green-50 border-2 border-green-200 opacity-0 hover:opacity-100 transition-opacity">
-      <div class="absolute top-2 left-2 bg-green-600 text-white text-xs px-2 py-1 rounded">Image Block</div>
-    </div>
-    
-    <div class="h-full w-full" :class="alignmentClass">
+  <div class="image-block" :class="alignmentClass">
+    <div v-if="data.imageUrl" class="image-container">
       <img 
-        v-if="data.imageUrl" 
         :src="data.imageUrl" 
-        :alt="data.altText"
-        class="max-w-full max-h-full"
+        :alt="data.altText || 'Image'"
+        :class="`rounded-${data.borderRadius || 'lg'} shadow-${data.shadow || 'md'}`"
         :style="imageStyles"
       />
-      <div v-else class="w-full h-full bg-gray-200 flex items-center justify-center">
-        <span class="text-gray-500 text-sm">No image selected</span>
+      
+      <div v-if="data.caption" class="image-caption mt-2 text-center">
+        <p class="text-sm text-gray-600">{{ data.caption }}</p>
+      </div>
+    </div>
+    
+    <div v-else class="image-placeholder">
+      <div class="w-full h-48 bg-gray-200 rounded-lg flex items-center justify-center">
+        <div class="text-center text-gray-500">
+          <UIcon name="i-lucide-image" class="w-12 h-12 mx-auto mb-2" />
+          <p class="text-sm">No image selected</p>
+        </div>
       </div>
     </div>
   </div>
@@ -21,37 +26,33 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { ComponentInstance } from '../../../libs/pagebuilder/types'
 
 interface Props {
-  component: ComponentInstance
-  isEditing?: boolean
+  data: {
+    imageUrl?: string
+    altText?: string
+    caption?: string
+    width?: number
+    height?: number
+    borderRadius?: 'none' | 'sm' | 'md' | 'lg' | 'xl' | 'full'
+    shadow?: 'none' | 'sm' | 'md' | 'lg' | 'xl' | '2xl'
+    alignment?: 'left' | 'center' | 'right'
+    linkUrl?: string
+  }
 }
 
 const props = defineProps<Props>()
 
-const data = computed(() => props.component.data)
-const isEditing = computed(() => props.isEditing || false)
-
-const componentStyles = computed(() => ({
-  width: `${props.component.size.width}px`,
-  height: `${props.component.size.height}px`,
-  position: 'relative'
-}))
+const alignmentClass = computed(() => {
+  const alignment = props.data.alignment || 'center'
+  return `text-${alignment}`
+})
 
 const imageStyles = computed(() => ({
-  objectFit: data.value.objectFit || 'cover',
-  borderRadius: data.value.borderRadius ? `${data.value.borderRadius}px` : '0'
+  width: props.data.width ? `${props.data.width}px` : '100%',
+  height: props.data.height ? `${props.data.height}px` : 'auto',
+  objectFit: 'cover'
 }))
-
-const alignmentClass = computed(() => {
-  switch (data.value.alignment) {
-    case 'center': return 'flex justify-center items-center'
-    case 'left': return 'flex justify-start items-center'
-    case 'right': return 'flex justify-end items-center'
-    default: return 'flex justify-center items-center'
-  }
-})
 </script>
 
 <style scoped>

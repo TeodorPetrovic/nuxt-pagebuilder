@@ -1,93 +1,152 @@
 import { componentRegistry } from './registry'
 import { createComponentDefinition, optionTypes } from './componentBuilder'
-import TextBlock from '../../components/PageBuilder/Components/TextBlock.vue'
-import ImageBlock from '../../components/PageBuilder/Components/ImageBlock.vue'
+import TextBlock from '~/components/PageBuilder/Components/TextBlock.vue'
+import ImageBlock from '~/components/PageBuilder/Components/ImageBlock.vue'
 
 // Register Text Block Component
-componentRegistry.register(createComponentDefinition({
+const textBlockDefinition = createComponentDefinition({
   name: 'text-block',
   displayName: 'Text Block',
-  category: 'Content',
-  icon: '📝',
-  description: 'A simple text block with heading and content',
+  category: 'text',
+  icon: '¶',
+  description: 'Rich text content with formatting options',
+  component: TextBlock,
   schema: [
-    optionTypes.text('heading', 'Heading', { 
-      defaultValue: 'Welcome to our page',
-      description: 'Main heading text'
-    }),
-    optionTypes.textarea('content', 'Content', { 
-      defaultValue: 'This is a sample text block. You can edit this content to add your own text.',
-      description: 'Main content text'
-    }),
-    optionTypes.select('alignment', 'Text Alignment', [
+    optionTypes.text('heading', 'Heading', { description: 'Enter a heading for this text block' }),
+    optionTypes.select('headingSize', 'Heading Size', [
+      { label: 'Extra Small', value: 'xs' },
+      { label: 'Small', value: 'sm' },
+      { label: 'Base', value: 'base' },
+      { label: 'Large', value: 'lg' },
+      { label: 'Extra Large', value: 'xl' },
+      { label: '2XL', value: '2xl' },
+      { label: '3XL', value: '3xl' },
+      { label: '4XL', value: '4xl' }
+    ]),
+    optionTypes.select('headingWeight', 'Heading Weight', [
+      { label: 'Normal', value: 'normal' },
+      { label: 'Medium', value: 'medium' },
+      { label: 'Semibold', value: 'semibold' },
+      { label: 'Bold', value: 'bold' },
+      { label: 'Extrabold', value: 'extrabold' }
+    ]),
+    optionTypes.color('headingColor', 'Heading Color'),
+    optionTypes.textarea('content', 'Content', { description: 'Enter the main text content' }),
+    optionTypes.select('textSize', 'Text Size', [
+      { label: 'Extra Small', value: 'xs' },
+      { label: 'Small', value: 'sm' },
+      { label: 'Base', value: 'base' },
+      { label: 'Large', value: 'lg' },
+      { label: 'Extra Large', value: 'xl' },
+      { label: '2XL', value: '2xl' }
+    ]),
+    optionTypes.color('textColor', 'Text Color'),
+    optionTypes.select('lineHeight', 'Line Height', [
+      { label: 'Tight', value: 'tight' },
+      { label: 'Snug', value: 'snug' },
+      { label: 'Normal', value: 'normal' },
+      { label: 'Relaxed', value: 'relaxed' },
+      { label: 'Loose', value: 'loose' }
+    ]),
+    optionTypes.text('buttonText', 'Button Text', { description: 'Optional button text' }),
+    optionTypes.select('buttonColor', 'Button Color', [
+      { label: 'Primary', value: 'primary' },
+      { label: 'Secondary', value: 'secondary' },
+      { label: 'Success', value: 'success' },
+      { label: 'Warning', value: 'warning' },
+      { label: 'Error', value: 'error' }
+    ]),
+    optionTypes.select('buttonVariant', 'Button Variant', [
+      { label: 'Solid', value: 'solid' },
+      { label: 'Outline', value: 'outline' },
+      { label: 'Ghost', value: 'ghost' }
+    ]),
+    optionTypes.select('buttonSize', 'Button Size', [
+      { label: 'Extra Small', value: 'xs' },
+      { label: 'Small', value: 'sm' },
+      { label: 'Medium', value: 'md' },
+      { label: 'Large', value: 'lg' },
+      { label: 'Extra Large', value: 'xl' }
+    ]),
+    optionTypes.select('alignment', 'Alignment', [
       { label: 'Left', value: 'left' },
       { label: 'Center', value: 'center' },
-      { label: 'Right', value: 'right' }
-    ], { defaultValue: 'left' }),
-    optionTypes.number('fontSize', 'Font Size', { 
-      defaultValue: 16,
-      validation: { min: 12, max: 72 }
-    }),
-    optionTypes.color('textColor', 'Text Color', { defaultValue: '#000000' }),
-    optionTypes.boolean('bold', 'Bold Text', { defaultValue: false }),
-    optionTypes.boolean('italic', 'Italic Text', { defaultValue: false })
+      { label: 'Right', value: 'right' },
+      { label: 'Justify', value: 'justify' }
+    ])
   ],
   defaultData: {
-    heading: 'Welcome to our page',
-    content: 'This is a sample text block. You can edit this content to add your own text.',
-    alignment: 'left',
-    fontSize: 16,
-    textColor: '#000000',
-    bold: false,
-    italic: false
-  },
-  component: TextBlock,
-  tags: ['text', 'content', 'typography'],
-  version: '1.0.0'
-}))
+    heading: 'Welcome to Our Page',
+    headingSize: '2xl',
+    headingWeight: 'bold',
+    headingColor: 'gray-900',
+    content: 'This is a sample text block. You can customize the content, styling, and layout to match your design needs.',
+    textSize: 'base',
+    textColor: 'gray-700',
+    lineHeight: 'relaxed',
+    buttonText: 'Learn More',
+    buttonColor: 'primary',
+    buttonVariant: 'solid',
+    buttonSize: 'md',
+    alignment: 'left'
+  }
+})
 
 // Register Image Block Component
-componentRegistry.register(createComponentDefinition({
+const imageBlockDefinition = createComponentDefinition({
   name: 'image-block',
   displayName: 'Image Block',
-  category: 'Media',
-  icon: '🖼️',
-  description: 'Display images with customizable options',
+  category: 'media',
+  icon: '🖼',
+  description: 'Images with various display options',
+  component: ImageBlock,
   schema: [
-    optionTypes.image('imageUrl', 'Image URL', { 
-      required: true,
-      description: 'URL of the image to display'
-    }),
-    optionTypes.text('altText', 'Alt Text', { 
-      defaultValue: '',
-      description: 'Alternative text for accessibility'
-    }),
-    optionTypes.select('alignment', 'Image Alignment', [
+    optionTypes.text('imageUrl', 'Image URL', { description: 'Enter the URL of the image' }),
+    optionTypes.text('altText', 'Alt Text', { description: 'Alternative text for accessibility' }),
+    optionTypes.text('caption', 'Caption', { description: 'Optional caption below the image' }),
+    optionTypes.number('width', 'Width', { description: 'Image width in pixels' }),
+    optionTypes.number('height', 'Height', { description: 'Image height in pixels' }),
+    optionTypes.select('borderRadius', 'Border Radius', [
+      { label: 'None', value: 'none' },
+      { label: 'Small', value: 'sm' },
+      { label: 'Medium', value: 'md' },
+      { label: 'Large', value: 'lg' },
+      { label: 'Extra Large', value: 'xl' },
+      { label: 'Full', value: 'full' }
+    ]),
+    optionTypes.select('shadow', 'Shadow', [
+      { label: 'None', value: 'none' },
+      { label: 'Small', value: 'sm' },
+      { label: 'Medium', value: 'md' },
+      { label: 'Large', value: 'lg' },
+      { label: 'Extra Large', value: 'xl' },
+      { label: '2XL', value: '2xl' }
+    ]),
+    optionTypes.select('alignment', 'Alignment', [
       { label: 'Left', value: 'left' },
       { label: 'Center', value: 'center' },
       { label: 'Right', value: 'right' }
-    ], { defaultValue: 'center' }),
-    optionTypes.select('objectFit', 'Image Fit', [
-      { label: 'Cover', value: 'cover' },
-      { label: 'Contain', value: 'contain' },
-      { label: 'Fill', value: 'fill' }
-    ], { defaultValue: 'cover' }),
-    optionTypes.number('borderRadius', 'Border Radius', { 
-      defaultValue: 0,
-      validation: { min: 0, max: 50 }
-    })
+    ]),
+    optionTypes.text('linkUrl', 'Link URL', { description: 'Optional URL to link the image to' })
   ],
   defaultData: {
     imageUrl: '',
-    altText: '',
+    altText: 'Image',
+    caption: '',
+    width: 400,
+    height: 300,
+    borderRadius: 'lg',
+    shadow: 'md',
     alignment: 'center',
-    objectFit: 'cover',
-    borderRadius: 0
-  },
-  component: ImageBlock,
-  tags: ['image', 'media', 'visual'],
-  version: '1.0.0'
-}))
+    linkUrl: ''
+  }
+})
 
-// Export for use in other parts of the app
-export { componentRegistry }
+// Register all components
+export function registerComponents() {
+  componentRegistry.register(textBlockDefinition)
+  componentRegistry.register(imageBlockDefinition)
+}
+
+// Auto-register components when this module is imported
+registerComponents()
