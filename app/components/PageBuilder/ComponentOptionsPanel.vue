@@ -1,81 +1,89 @@
 <template>
-  <div class="space-y-4">
+  <div class="space-y-6">
     <!-- Component Options -->
-    <div v-if="component.schema && component.schema.length > 0" class="space-y-4">
+         <div v-if="component.schema && component.schema.length > 0" class="space-y-6">
       <div
         v-for="option in component.schema"
         :key="option.name"
-        class="space-y-2"
+        class="space-y-3"
       >
-        <label class="block text-sm font-medium text-gray-700">
+        <label class="block text-base font-medium text-gray-800">
           {{ option.label }}
           <span v-if="option.required" class="text-red-500">*</span>
         </label>
         
-        <!-- Text Input -->
-        <UInput
-          v-if="option.type === 'text'"
-          v-model="component.data[option.name]"
-          :placeholder="option.description"
-          @update:model-value="updateOption(option.name, $event)"
-        />
+                 <!-- Text Input -->
+         <UInput
+           v-if="option.type === 'text'"
+           v-model="component.data[option.name]"
+           :placeholder="option.description"
+           class="w-full"
+           @update:model-value="updateOption(option.name, $event)"
+         />
         
-        <!-- Number Input -->
-        <UInput
-          v-else-if="option.type === 'number'"
-          v-model="component.data[option.name]"
-          type="number"
-          :placeholder="option.description"
-          @update:model-value="updateOption(option.name, $event)"
-        />
+                 <!-- Number Input -->
+         <UInput
+           v-else-if="option.type === 'number'"
+           v-model="component.data[option.name]"
+           type="number"
+           :placeholder="option.description"
+           class="w-full"
+           @update:model-value="updateOption(option.name, $event)"
+         />
         
-        <!-- Boolean Switch -->
-        <USwitch
-          v-else-if="option.type === 'boolean'"
-          v-model="component.data[option.name]"
-          @update:model-value="updateOption(option.name, $event)"
-        />
+                 <!-- Boolean Switch -->
+         <USwitch
+           v-else-if="option.type === 'boolean'"
+           v-model="component.data[option.name]"
+           class="w-full"
+           @update:model-value="updateOption(option.name, $event)"
+         />
         
-        <!-- Select Dropdown -->
-        <USelect
-          v-else-if="option.type === 'select' && option.options"
-          v-model="component.data[option.name]"
-          :options="option.options"
-          :placeholder="option.description"
-          @update:model-value="updateOption(option.name, $event)"
-        />
+                 <!-- Select Dropdown -->
+         <USelect
+           v-else-if="option.type === 'select' && option.options"
+           v-model="component.data[option.name]"
+           :items="option.options"
+           :placeholder="option.description"
+           class="w-full"
+           @update:model-value="updateOption(option.name, $event)"
+         />
         
-        <!-- Color Picker -->
-        <UInput
-          v-else-if="option.type === 'color'"
-          v-model="component.data[option.name]"
-          type="color"
-          @update:model-value="updateOption(option.name, $event)"
-        />
+                 <!-- Color Picker -->
+         <UInput
+           v-else-if="option.type === 'color'"
+           v-model="component.data[option.name]"
+           type="color"
+           class="w-full"
+           @update:model-value="updateOption(option.name, $event)"
+         />
         
-        <!-- Textarea -->
-        <UTextarea
-          v-else-if="option.type === 'textarea'"
-          v-model="component.data[option.name]"
-          :placeholder="option.description"
-          @update:model-value="updateOption(option.name, $event)"
-        />
+                 <!-- Textarea -->
+         <UTextarea
+           v-else-if="option.type === 'textarea'"
+           v-model="component.data[option.name]"
+           :placeholder="option.description"
+           class="w-full"
+           @update:model-value="updateOption(option.name, $event)"
+         />
         
-        <!-- JSON Editor -->
-        <UTextarea
-          v-else-if="option.type === 'json'"
-          v-model="jsonString"
-          :placeholder="option.description"
-          @update:model-value="updateJsonOption(option.name, $event)"
-        />
+                 <!-- JSON Editor -->
+         <UTextarea
+           v-else-if="option.type === 'json'"
+           v-model="jsonString"
+           :placeholder="option.description"
+           class="w-full"
+           @update:model-value="updateJsonOption(option.name, $event)"
+         />
         
-        <!-- Default Text Input -->
-        <UInput
-          v-else
-          v-model="component.data[option.name]"
-          :placeholder="option.description"
-          @update:model-value="updateOption(option.name, $event)"
-        />
+                 <!-- Default Text Input -->
+         <UInput
+           v-else
+           v-model="component.data[option.name]"
+           :placeholder="option.description"
+           class="w-full"
+           @update:model-value="updateOption(option.name, $event)"
+         />
         
         <!-- Validation Error -->
         <p v-if="option.validation?.message" class="text-xs text-red-500">
