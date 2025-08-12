@@ -13,6 +13,7 @@ export function createComponentDefinition(config: {
   preview?: string
   tags?: string[]
   version?: string
+  updateData?: (oldData: any, newData: any) => any
 }): ComponentDefinition {
   return {
     name: config.name,
@@ -25,7 +26,8 @@ export function createComponentDefinition(config: {
     component: config.component,
     preview: config.preview,
     tags: config.tags || [],
-    version: config.version || '1.0.0'
+    version: config.version || '1.0.0',
+    updateData: config.updateData
   }
 }
 

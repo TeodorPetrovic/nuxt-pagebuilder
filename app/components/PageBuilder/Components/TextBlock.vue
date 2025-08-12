@@ -18,7 +18,7 @@
     
     <div v-if="data.buttonText" class="text-block-button mt-4">
       <UButton 
-        :color="data.buttonColor || 'primary'"
+        :color="getButtonColor(data.buttonColor)"
         :variant="data.buttonVariant || 'solid'"
         :size="data.buttonSize || 'md'"
       >
@@ -53,6 +53,28 @@ const props = defineProps<Props>()
 
 const alignmentClass = computed(() => {
   const alignment = props.data.alignment || 'left'
-  return `text-${alignment}`
+  switch (alignment) {
+    case 'left':
+      return 'text-left'
+    case 'center':
+      return 'text-center'
+    case 'right':
+      return 'text-right'
+    case 'justify':
+      return 'text-justify'
+    default:
+      return 'text-left'
+  }
 })
+
+const getButtonColor = (color?: string) => {
+  if (color === 'primary') return 'primary'
+  if (color === 'secondary') return 'secondary'
+  if (color === 'success') return 'success'
+  if (color === 'error') return 'error'
+  if (color === 'warning') return 'warning'
+  if (color === 'info') return 'info'
+  if (color === 'neutral') return 'neutral'
+  return 'primary' // Default color
+}
 </script>

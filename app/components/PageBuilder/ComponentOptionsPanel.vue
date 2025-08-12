@@ -1,97 +1,53 @@
 <template>
   <div class="space-y-6">
     <!-- Component Options -->
-         <div v-if="component.schema && component.schema.length > 0" class="space-y-6">
-      <div
-        v-for="option in component.schema"
-        :key="option.name"
-        class="space-y-3"
-      >
-        <label class="block text-base font-medium text-gray-800">
+    <div v-if="component.schema && component.schema.length > 0" class="space-y-6">
+      <div v-for="option in component.schema" :key="option.name">
+        <label class="block text-sm text-gray-800 pb-1">
           {{ option.label }}
           <span v-if="option.required" class="text-red-500">*</span>
         </label>
-        
-                 <!-- Text Input -->
-         <UInput
-           v-if="option.type === 'text'"
-           v-model="component.data[option.name]"
-           :placeholder="option.description"
-           class="w-full"
-           @update:model-value="updateOption(option.name, $event)"
-         />
-        
-                 <!-- Number Input -->
-         <UInput
-           v-else-if="option.type === 'number'"
-           v-model="component.data[option.name]"
-           type="number"
-           :placeholder="option.description"
-           class="w-full"
-           @update:model-value="updateOption(option.name, $event)"
-         />
-        
-                 <!-- Boolean Switch -->
-         <USwitch
-           v-else-if="option.type === 'boolean'"
-           v-model="component.data[option.name]"
-           class="w-full"
-           @update:model-value="updateOption(option.name, $event)"
-         />
-        
-                 <!-- Select Dropdown -->
-         <USelect
-           v-else-if="option.type === 'select' && option.options"
-           v-model="component.data[option.name]"
-           :items="option.options"
-           :placeholder="option.description"
-           class="w-full"
-           @update:model-value="updateOption(option.name, $event)"
-         />
-        
-                 <!-- Color Picker -->
-         <UInput
-           v-else-if="option.type === 'color'"
-           v-model="component.data[option.name]"
-           type="color"
-           class="w-full"
-           @update:model-value="updateOption(option.name, $event)"
-         />
-        
-                 <!-- Textarea -->
-         <UTextarea
-           v-else-if="option.type === 'textarea'"
-           v-model="component.data[option.name]"
-           :placeholder="option.description"
-           class="w-full"
-           @update:model-value="updateOption(option.name, $event)"
-         />
-        
-                 <!-- JSON Editor -->
-         <UTextarea
-           v-else-if="option.type === 'json'"
-           v-model="jsonString"
-           :placeholder="option.description"
-           class="w-full"
-           @update:model-value="updateJsonOption(option.name, $event)"
-         />
-        
-                 <!-- Default Text Input -->
-         <UInput
-           v-else
-           v-model="component.data[option.name]"
-           :placeholder="option.description"
-           class="w-full"
-           @update:model-value="updateOption(option.name, $event)"
-         />
-        
+
+        <!-- Text Input -->
+        <UInput v-if="option.type === 'text'" v-model="component.data[option.name]" :placeholder="option.description"
+          class="w-full" @update:model-value="updateOption(option.name, $event)" />
+
+        <!-- Number Input -->
+        <UInput v-else-if="option.type === 'number'" v-model="component.data[option.name]" type="number"
+          :placeholder="option.description" class="w-full" @update:model-value="updateOption(option.name, $event)" />
+
+        <!-- Boolean Switch -->
+        <USwitch v-else-if="option.type === 'boolean'" v-model="component.data[option.name]" class="w-full"
+          @update:model-value="updateOption(option.name, $event)" />
+
+        <!-- Select Dropdown -->
+        <USelect v-else-if="option.type === 'select' && option.options" v-model="component.data[option.name]"
+          :items="option.options" :placeholder="option.description" class="w-full"
+          @update:model-value="updateOption(option.name, $event)" />
+
+        <!-- Color Picker -->
+        <UInput v-else-if="option.type === 'color'" v-model="component.data[option.name]" type="color" class="w-full"
+          @update:model-value="updateOption(option.name, $event)" />
+
+        <!-- Textarea -->
+        <UTextarea v-else-if="option.type === 'textarea'" v-model="component.data[option.name]"
+          :placeholder="option.description" class="w-full" @update:model-value="updateOption(option.name, $event)" />
+
+        <!-- JSON Editor -->
+        <UTextarea v-else-if="option.type === 'json'" v-model="jsonString" :placeholder="option.description"
+          class="w-full" @update:model-value="updateJsonOption(option.name, $event)" />
+
+        <!-- Default Text Input -->
+        <UInput v-else v-model="component.data[option.name]" :placeholder="option.description" class="w-full"
+          @update:model-value="updateOption(option.name, $event)" />
+
         <!-- Validation Error -->
         <p v-if="option.validation?.message" class="text-xs text-red-500">
           {{ option.validation.message }}
         </p>
       </div>
     </div>
-    
+
     <!-- No Options Available -->
     <div v-else class="text-center text-gray-500 py-4">
       <p class="text-sm">No configurable options for this component</p>
@@ -131,12 +87,22 @@ const jsonString = computed({
 })
 
 const updateOption = (name: string, value: any) => {
-  emit('update', {
-    data: {
-      ...props.component.data,
-      [name]: value
-    }
-  })
+  const newData = {
+    ...props.component.data,
+    [name]: value
+  }
+
+  // Check if component has an updateData function for dynamic updates
+  if (props.component.updateData) {
+    const updatedData = props.component.updateData(props.component.data, newData)
+    emit('update', {
+      data: updatedData
+    })
+  } else {
+    emit('update', {
+      data: newData
+    })
+  }
 }
 
 const updateJsonOption = (name: string, value: string) => {

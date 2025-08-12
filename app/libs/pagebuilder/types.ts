@@ -53,6 +53,7 @@ export interface ComponentDefinition {
   preview?: string // Base64 image or component preview
   tags?: string[]
   version: string
+  updateData?: (oldData: any, newData: any) => any
 }
 
 export interface ComponentInstance {

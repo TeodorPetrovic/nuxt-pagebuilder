@@ -162,11 +162,11 @@
               <div v-for="(component, index) in pageComponents" :key="component.id" class="relative group">
                 <!-- Component Content with Drop Zones -->
                 <div class="relative">
-                  <!-- Top Drop Zone -->
-                  <div v-if="isDragging" class="absolute top-0 left-0 right-0 h-[30%] z-10 transition-all duration-200 cursor-pointer"
-                    :class="dragTarget === `${index}-above` ? 'bg-blue-50 border-2 border-blue-400 border-dashed' : isDragging ? 'hover:bg-gray-50' : ''"
-                    @dragover.prevent @drop="onDrop($event, index)"
-                    @dragenter="onDragEnter(`${index}-above`)">
+                                     <!-- Top Drop Zone -->
+                   <div v-if="isDragging" class="absolute top-0 left-0 right-0 h-[30px] z-10 transition-all duration-200 cursor-pointer"
+                     :class="dragTarget === `${index}-above` ? 'bg-blue-50 border-2 border-blue-400 border-dashed' : isDragging ? 'hover:bg-gray-50' : ''"
+                     @dragover.prevent @drop="onDrop($event, index)"
+                     @dragenter="onDragEnter(`${index}-above`)">
                     <div v-if="dragTarget === `${index}-above`" class="flex items-center justify-center h-full">
                       <div class="flex items-center space-x-2 text-blue-600 text-sm font-medium">
                         <UIcon name="i-lucide-plus" class="w-4 h-4" />
@@ -175,11 +175,11 @@
                     </div>
                   </div>
 
-                  <!-- Bottom Drop Zone -->
-                  <div v-if="isDragging" class="absolute bottom-0 left-0 right-0 h-[30%] z-10 transition-all duration-200 cursor-pointer"
-                    :class="dragTarget === `${index}-below` ? 'bg-blue-50 border-2 border-blue-400 border-dashed' : isDragging ? 'hover:bg-gray-50' : ''"
-                    @dragover.prevent @drop="onDrop($event, index + 1)"
-                    @dragenter="onDragEnter(`${index}-below`)">
+                                     <!-- Bottom Drop Zone -->
+                   <div v-if="isDragging" class="absolute bottom-0 left-0 right-0 h-[30px] z-10 transition-all duration-200 cursor-pointer"
+                     :class="dragTarget === `${index}-below` ? 'bg-blue-50 border-2 border-blue-400 border-dashed' : isDragging ? 'hover:bg-gray-50' : ''"
+                     @dragover.prevent @drop="onDrop($event, index + 1)"
+                     @dragenter="onDragEnter(`${index}-below`)">
                     <div v-if="dragTarget === `${index}-below`" class="flex items-center justify-center h-full">
                       <div class="flex items-center space-x-2 text-blue-600 text-sm font-medium">
                         <UIcon name="i-lucide-plus" class="w-4 h-4" />
@@ -276,15 +276,15 @@
             <div v-else-if="activePropertyTab === 'block'" class="space-y-6">
               <!-- Block Info -->
               <div v-if="selectedComponent" class="space-y-6">
-                <div class="flex items-start space-x-4">
-                  <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                    <span class="text-blue-600 text-xl font-semibold">{{ selectedComponent.icon }}</span>
-                  </div>
-                  <div class="flex-1">
-                    <h4 class="text-xl font-semibold text-gray-800">{{ selectedComponent.displayName }}</h4>
-                    <p class="text-base text-gray-600 mt-1">{{ selectedComponent.description }}</p>
-                  </div>
-                </div>
+                                 <div class="flex items-start space-x-4">
+                   <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                     <span class="text-blue-600 text-xl font-semibold">{{ selectedComponent.icon }}</span>
+                   </div>
+                   <div class="flex-1">
+                     <h4 class="text-lg font-semibold text-gray-800">{{ selectedComponent.displayName }}</h4>
+                     <p class="text-sm text-gray-600 mt-1">{{ selectedComponent.description }}</p>
+                   </div>
+                 </div>
 
                 <!-- Component Options -->
                 <div class="border-t border-gray-200 pt-6 animate-in slide-in-from-bottom-2 duration-300">
@@ -355,7 +355,8 @@ const templateOptions = [
 
 // Block definitions from registry - only use the components we actually implemented
 const textBlocks = computed(() => [
-  { name: 'text-block', label: 'Text Block', description: 'Rich text content with formatting options.', icon: '¶' }
+  { name: 'text-block', label: 'Mini Hero', description: 'Rich text content with formatting options.', icon: '¶' },
+  { name: 'paragraph-block', label: 'Paragraph', description: 'Simple paragraph text with basic styling.', icon: '📝' }
 ])
 
 const mediaBlocks = computed(() => [
@@ -363,8 +364,10 @@ const mediaBlocks = computed(() => [
 ])
 
 const layoutBlocks = computed(() => [
-  // Empty for now since we haven't implemented layout components yet
-] as Array<{ name: string; label: string; description: string; icon: string }>)
+  { name: 'columns-block', label: 'Columns', description: 'Multi-column layout with customizable columns.', icon: '📊' },
+  { name: 'grid-block', label: 'Grid', description: 'Flexible grid layout with customizable cells.', icon: '🔲' },
+  { name: 'container-block', label: 'Container', description: 'Container with spacing, background, and border options.', icon: '📦' }
+])
 
 // Filtered blocks based on search
 const filteredTextBlocks = computed(() =>

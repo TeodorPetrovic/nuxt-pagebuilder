@@ -14,10 +14,11 @@
     </div>
     
     <div v-else class="image-placeholder">
-      <div class="w-full h-48 bg-gray-200 rounded-lg flex items-center justify-center">
+      <div class="placeholder-container" :style="placeholderStyles">
         <div class="text-center text-gray-500">
           <UIcon name="i-lucide-image" class="w-12 h-12 mx-auto mb-2" />
           <p class="text-sm">No image selected</p>
+          <p class="text-xs text-gray-400 mt-1">{{ data.width || 400 }} × {{ data.height || 300 }}px</p>
         </div>
       </div>
     </div>
@@ -59,7 +60,13 @@ const alignmentClass = computed(() => {
 const imageStyles = computed(() => ({
   width: props.data.width ? `${props.data.width}px` : '100%',
   height: props.data.height ? `${props.data.height}px` : 'auto',
-  objectFit: 'cover'
+  objectFit: 'cover' as const
+}))
+
+const placeholderStyles = computed(() => ({
+  width: props.data.width ? `${props.data.width}px` : '400px',
+  height: props.data.height ? `${props.data.height}px` : '300px',
+  maxWidth: '100%'
 }))
 </script>
 
@@ -77,5 +84,20 @@ const imageStyles = computed(() => ({
 .image-container img {
   max-width: 100%;
   height: auto;
+}
+
+.placeholder-container {
+  background-color: #f3f4f6;
+  border: 2px dashed #d1d5db;
+  border-radius: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease-in-out;
+}
+
+.placeholder-container:hover {
+  background-color: #e5e7eb;
+  border-color: #9ca3af;
 }
 </style>
