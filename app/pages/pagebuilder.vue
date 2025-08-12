@@ -138,13 +138,11 @@
       <!-- Center Canvas -->
       <div class="flex-1 bg-white relative overflow-auto">
         <div class="min-h-full p-8">
-          <!-- Page Title - Removed as requested -->
-
           <!-- Functional Editor Canvas -->
           <div class="max-w-4xl mx-auto">
             <!-- Drop Zone Instructions -->
             <div v-if="pageComponents.length === 0"
-              class="border-2 border-dashed border-gray-300 rounded-lg p-12 text-center bg-gray-50 transition-all duration-200"
+              class="border-2 border-dashed border-gray-300 rounded-lg p-12 text-center bg-gray-50 transition-all duration-200 cursor-pointer"
               :class="dragTarget === 'initial' ? 'border-blue-400 bg-blue-50' : 'hover:border-blue-400 hover:bg-blue-50'"
               @dragover.prevent @drop="onDrop" @dragenter.prevent="onDragEnterInitial"
               @dragleave.prevent="onDragLeaveInitial">
@@ -168,8 +166,8 @@
                 <!-- Component Content with Drop Zones -->
                 <div class="relative">
                   <!-- Top Drop Zone (30% of component height) -->
-                  <div class="absolute top-0 left-0 right-0 h-[30%] z-10 transition-all duration-200"
-                    :class="dragTarget === `${index}-above` ? 'bg-blue-50 border-2 border-blue-400 border-dashed' : ''"
+                  <div class="absolute top-0 left-0 right-0 h-[30%] z-10 transition-all duration-200 cursor-pointer"
+                    :class="dragTarget === `${index}-above` ? 'bg-blue-50 border-2 border-blue-400 border-dashed' : 'hover:bg-gray-50'"
                     @dragover.prevent @drop="onDrop($event, index)"
                     @dragenter.prevent="onDragEnter($event, index, 'above')"
                     @dragleave.prevent="onDragLeave($event, index, 'above')">
@@ -182,8 +180,8 @@
                   </div>
 
                   <!-- Bottom Drop Zone (30% of component height) -->
-                  <div class="absolute bottom-0 left-0 right-0 h-[30%] z-10 transition-all duration-200"
-                    :class="dragTarget === `${index}-below` ? 'bg-blue-50 border-2 border-blue-400 border-dashed' : ''"
+                  <div class="absolute bottom-0 left-0 right-0 h-[30%] z-10 transition-all duration-200 cursor-pointer"
+                    :class="dragTarget === `${index}-below` ? 'bg-blue-50 border-2 border-blue-400 border-dashed' : 'hover:bg-gray-50'"
                     @dragover.prevent @drop="onDrop($event, index + 1)"
                     @dragenter.prevent="onDragEnter($event, index, 'below')"
                     @dragleave.prevent="onDragLeave($event, index, 'below')">
@@ -217,7 +215,7 @@
 
               <!-- Final Drop Zone - Always visible and more prominent -->
               <div
-                class="h-8 mt-4 transition-all duration-200 rounded-lg border-2 border-dashed border-gray-300 flex items-center justify-center bg-gray-50"
+                class="h-8 mt-4 transition-all duration-200 rounded-lg border-2 border-dashed border-gray-300 flex items-center justify-center bg-gray-50 cursor-pointer"
                 :class="dragTarget === `${pageComponents.length}-below` ? 'border-blue-400 bg-blue-50' : 'hover:border-blue-400 hover:bg-blue-50'"
                 @dragover.prevent @drop="onDrop($event, pageComponents.length)"
                 @dragenter="onDragEnter($event, pageComponents.length, 'below')"
@@ -341,6 +339,10 @@ const selectedComponentId = ref<string | null>(null)
 const pageComponents = ref<ComponentInstance[]>([])
 const draggedComponentId = ref<string | null>(null)
 const dragTarget = ref<string | null>(null)
+const isDragging = ref(false)
+const lastDragTarget = ref<string | null>(null)
+const lastDragEnterTime = ref(0)
+const lastDragLeaveTime = ref(0)
 
 // Tabs
 const tabs = [
@@ -423,33 +425,32 @@ const toggleEditing = () => {
 }
 
 const onDragStart = (event: DragEvent, block: any) => {
-  console.log('Drag start:', block)
   if (event.dataTransfer) {
     event.dataTransfer.setData('block-type', block.name)
     event.dataTransfer.effectAllowed = 'copy'
-    console.log('Set drag data:', block.name)
   }
+
+  console.log('Drag start:', JSON.stringify(block, null, 2))
+  
+  // Set dragging state
+  isDragging.value = true
+  lastDragTarget.value = null
+  dragTarget.value = null
 }
 
 const onDrop = (event: DragEvent, index?: number) => {
   event.preventDefault()
   event.stopPropagation()
 
-  console.log('Drop event triggered', { index, dragTarget: dragTarget.value })
-
   const blockType = event.dataTransfer?.getData('block-type')
-  console.log('Block type:', blockType)
 
   if (!blockType) {
-    console.log('No block type found')
     return
   }
 
   const definition = componentRegistryInstance.get(blockType)
-  console.log('Component definition:', definition)
 
   if (!definition) {
-    console.log('No component definition found')
     return
   }
 
@@ -461,21 +462,17 @@ const onDrop = (event: DragEvent, index?: number) => {
     size: { width: 100, height: 100 }
   }
 
-  console.log('Creating new component:', newComponent)
-
   if (index !== undefined) {
-    console.log('Inserting at index:', index)
     pageComponents.value.splice(index, 0, newComponent)
   } else {
-    console.log('Adding to end')
     pageComponents.value.push(newComponent)
   }
 
-  console.log('Updated pageComponents:', pageComponents.value)
-
   // Clear drag state immediately after drop
   dragTarget.value = null
-
+  lastDragTarget.value = null
+  isDragging.value = false
+  
   // Select the new component
   selectComponent(newComponent.id)
 }
@@ -525,36 +522,95 @@ const onDragEnter = (event: DragEvent, index: number, position: 'above' | 'below
   // Prevent event bubbling to avoid flickering
   event.stopPropagation()
   event.preventDefault()
-  dragTarget.value = `${index}-${position}`
+  
+  if (!isDragging.value) return
+  
+  // Throttle events to prevent constant firing
+  const now = Date.now()
+  if (now - lastDragEnterTime.value < 100) return // Only allow events every 100ms
+  
+  const newTarget = `${index}-${position}`
+  
+  // Only update if this is a genuinely new target
+  if (lastDragTarget.value !== newTarget) {
+    lastDragTarget.value = newTarget
+    dragTarget.value = newTarget
+    lastDragEnterTime.value = now
+  }
 }
 
 const onDragLeave = (event: DragEvent, index: number, position: 'above' | 'below') => {
   // Prevent event bubbling to avoid flickering
   event.stopPropagation()
   event.preventDefault()
-  // Only clear if we're actually leaving the drop zone
-  if (dragTarget.value === `${index}-${position}`) {
-    dragTarget.value = null
+  
+  if (!isDragging.value) return
+  
+  // Throttle events to prevent constant firing
+  const now = Date.now()
+  if (now - lastDragLeaveTime.value < 100) return // Only allow events every 100ms
+  
+  const currentTarget = `${index}-${position}`
+  
+  // Only clear if we're actually leaving the current target
+  if (dragTarget.value === currentTarget) {
+    // Don't clear immediately - wait a bit to see if we enter another target
+    // This prevents flickering when moving between adjacent drop zones
+    setTimeout(() => {
+      if (dragTarget.value === currentTarget) {
+        dragTarget.value = null
+      }
+    }, 50)
   }
+  
+  lastDragLeaveTime.value = now
 }
 
 const onDragEnterInitial = (event: DragEvent) => {
   // Prevent event bubbling to avoid flickering
   event.stopPropagation()
-  dragTarget.value = 'initial'
+  
+  if (!isDragging.value) return
+  
+  // Throttle events to prevent constant firing
+  const now = Date.now()
+  if (now - lastDragEnterTime.value < 100) return // Only allow events every 100ms
+  
+  // Only update if this is a genuinely new target
+  if (lastDragTarget.value !== 'initial') {
+    lastDragTarget.value = 'initial'
+    dragTarget.value = 'initial'
+    lastDragEnterTime.value = now
+  }
 }
 
 const onDragLeaveInitial = (event: DragEvent) => {
   // Prevent event bubbling to avoid flickering
   event.stopPropagation()
-  // Only clear if we're actually leaving the initial drop zone
+
+  if (!isDragging.value) return
+
+  // Throttle events to prevent constant firing
+  const now = Date.now()
+  if (now - lastDragLeaveTime.value < 100) return // Only allow events every 100ms
+
+  // Only clear if we're actually leaving the current target
   if (dragTarget.value === 'initial') {
-    dragTarget.value = null
+    // Don't clear immediately - wait a bit to see if we enter another target
+    setTimeout(() => {
+      if (dragTarget.value === 'initial') {
+        dragTarget.value = null
+      }
+    }, 50)
   }
+
+  lastDragLeaveTime.value = now
 }
 
 // Global drag end handler to clear any stuck drag states
 const onDragEnd = () => {
   dragTarget.value = null
+  lastDragTarget.value = null
+  isDragging.value = false
 }
 </script>
