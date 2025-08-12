@@ -45,7 +45,15 @@ const props = defineProps<Props>()
 
 const alignmentClass = computed(() => {
   const alignment = props.data.alignment || 'center'
-  return `text-${alignment}`
+  switch (alignment) {
+    case 'left':
+      return 'flex justify-start'
+    case 'right':
+      return 'flex justify-end'
+    case 'center':
+    default:
+      return 'flex justify-center'
+  }
 })
 
 const imageStyles = computed(() => ({
@@ -56,4 +64,18 @@ const imageStyles = computed(() => ({
 </script>
 
 <style scoped>
+.image-block {
+  width: 100%;
+}
+
+.image-container {
+  display: flex;
+  flex-direction: column;
+  align-items: inherit;
+}
+
+.image-container img {
+  max-width: 100%;
+  height: auto;
+}
 </style>

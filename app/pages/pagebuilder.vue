@@ -143,9 +143,8 @@
             <!-- Drop Zone Instructions -->
             <div v-if="pageComponents.length === 0"
               class="border-2 border-dashed border-gray-300 rounded-lg p-12 text-center bg-gray-50 transition-all duration-200 cursor-pointer"
-              :class="dragTarget === 'initial' ? 'border-blue-400 bg-blue-50' : 'hover:border-blue-400 hover:bg-blue-50'"
-              @dragover.prevent @drop="onDrop" @dragenter.prevent="onDragEnterInitial"
-              @dragleave.prevent="onDragLeaveInitial">
+              :class="dragTarget === 'initial' ? 'border-blue-400 bg-blue-50' : isDragging ? 'hover:border-blue-400 hover:bg-blue-50' : ''"
+              @dragover.prevent @drop="onDrop" @dragenter="onDragEnter('initial')" @dragleave="onDragLeave">
               <div v-if="dragTarget === 'initial'" class="space-y-4">
                 <UIcon name="i-lucide-plus-circle" class="w-16 h-16 mx-auto text-blue-500" />
                 <h3 class="text-xl font-semibold text-blue-700">Drop your block here!</h3>
@@ -161,16 +160,13 @@
             <!-- Page Components -->
             <div v-else class="space-y-4">
               <div v-for="(component, index) in pageComponents" :key="component.id" class="relative group">
-
-
                 <!-- Component Content with Drop Zones -->
                 <div class="relative">
-                  <!-- Top Drop Zone (30% of component height) -->
-                  <div class="absolute top-0 left-0 right-0 h-[30%] z-10 transition-all duration-200 cursor-pointer"
-                    :class="dragTarget === `${index}-above` ? 'bg-blue-50 border-2 border-blue-400 border-dashed' : 'hover:bg-gray-50'"
+                  <!-- Top Drop Zone -->
+                  <div v-if="isDragging" class="absolute top-0 left-0 right-0 h-[30%] z-10 transition-all duration-200 cursor-pointer"
+                    :class="dragTarget === `${index}-above` ? 'bg-blue-50 border-2 border-blue-400 border-dashed' : isDragging ? 'hover:bg-gray-50' : ''"
                     @dragover.prevent @drop="onDrop($event, index)"
-                    @dragenter.prevent="onDragEnter($event, index, 'above')"
-                    @dragleave.prevent="onDragLeave($event, index, 'above')">
+                    @dragenter="onDragEnter(`${index}-above`)">
                     <div v-if="dragTarget === `${index}-above`" class="flex items-center justify-center h-full">
                       <div class="flex items-center space-x-2 text-blue-600 text-sm font-medium">
                         <UIcon name="i-lucide-plus" class="w-4 h-4" />
@@ -179,12 +175,11 @@
                     </div>
                   </div>
 
-                  <!-- Bottom Drop Zone (30% of component height) -->
-                  <div class="absolute bottom-0 left-0 right-0 h-[30%] z-10 transition-all duration-200 cursor-pointer"
-                    :class="dragTarget === `${index}-below` ? 'bg-blue-50 border-2 border-blue-400 border-dashed' : 'hover:bg-gray-50'"
+                  <!-- Bottom Drop Zone -->
+                  <div v-if="isDragging" class="absolute bottom-0 left-0 right-0 h-[30%] z-10 transition-all duration-200 cursor-pointer"
+                    :class="dragTarget === `${index}-below` ? 'bg-blue-50 border-2 border-blue-400 border-dashed' : isDragging ? 'hover:bg-gray-50' : ''"
                     @dragover.prevent @drop="onDrop($event, index + 1)"
-                    @dragenter.prevent="onDragEnter($event, index, 'below')"
-                    @dragleave.prevent="onDragLeave($event, index, 'below')">
+                    @dragenter="onDragEnter(`${index}-below`)">
                     <div v-if="dragTarget === `${index}-below`" class="flex items-center justify-center h-full">
                       <div class="flex items-center space-x-2 text-blue-600 text-sm font-medium">
                         <UIcon name="i-lucide-plus" class="w-4 h-4" />
@@ -194,9 +189,12 @@
                   </div>
 
                   <!-- Component Content -->
-                  <div class="border-2 border-transparent hover:border-blue-300 rounded-lg p-4 transition-colors"
-                    :class="{ 'border-blue-500': selectedComponentId === component.id }">
-                    <ComponentRenderer :component="component" @click="selectComponent(component.id)" />
+                  <div class="border-2 border-transparent hover:border-blue-300 rounded-lg p-4 transition-colors cursor-move"
+                    :class="{ 'border-blue-500': selectedComponentId === component.id }"
+                    draggable="true"
+                    @dragstart="onComponentDragStart($event, component, index)"
+                    @click="selectComponent(component.id)">
+                    <ComponentRenderer :component="component" />
                   </div>
                 </div>
 
@@ -213,13 +211,12 @@
                 </div>
               </div>
 
-              <!-- Final Drop Zone - Always visible and more prominent -->
+              <!-- Final Drop Zone -->
               <div
                 class="h-8 mt-4 transition-all duration-200 rounded-lg border-2 border-dashed border-gray-300 flex items-center justify-center bg-gray-50 cursor-pointer"
-                :class="dragTarget === `${pageComponents.length}-below` ? 'border-blue-400 bg-blue-50' : 'hover:border-blue-400 hover:bg-blue-50'"
+                :class="dragTarget === `${pageComponents.length}-below` ? 'border-blue-400 bg-blue-50' : isDragging ? 'hover:border-blue-400 hover:bg-blue-50' : ''"
                 @dragover.prevent @drop="onDrop($event, pageComponents.length)"
-                @dragenter="onDragEnter($event, pageComponents.length, 'below')"
-                @dragleave="onDragLeave($event, pageComponents.length, 'below')">
+                @dragenter="onDragEnter(`${pageComponents.length}-below`)">
                 <div v-if="dragTarget === `${pageComponents.length}-below`"
                   class="flex items-center space-x-2 text-blue-600 text-sm font-medium">
                   <UIcon name="i-lucide-plus" class="w-4 h-4" />
@@ -323,8 +320,6 @@ definePageMeta({
 // Component Registry
 const componentRegistryInstance = componentRegistry
 
-// Components are automatically registered when the app loads
-
 // State
 const isEditing = ref(true)
 const searchQuery = ref('')
@@ -337,12 +332,8 @@ const leftSidebarCollapsed = ref(false)
 const rightSidebarCollapsed = ref(false)
 const selectedComponentId = ref<string | null>(null)
 const pageComponents = ref<ComponentInstance[]>([])
-const draggedComponentId = ref<string | null>(null)
 const dragTarget = ref<string | null>(null)
 const isDragging = ref(false)
-const lastDragTarget = ref<string | null>(null)
-const lastDragEnterTime = ref(0)
-const lastDragLeaveTime = ref(0)
 
 // Tabs
 const tabs = [
@@ -424,57 +415,73 @@ const toggleEditing = () => {
   isEditing.value = !isEditing.value
 }
 
+// Simple drag and drop handlers
 const onDragStart = (event: DragEvent, block: any) => {
   if (event.dataTransfer) {
     event.dataTransfer.setData('block-type', block.name)
     event.dataTransfer.effectAllowed = 'copy'
   }
-
-  console.log('Drag start:', JSON.stringify(block, null, 2))
-  
-  // Set dragging state
   isDragging.value = true
-  lastDragTarget.value = null
-  dragTarget.value = null
+}
+
+const onDragEnter = (target: string) => {
+  dragTarget.value = target
+}
+
+const onDragLeave = () => {
+  // Only clear if we're not entering another drop zone
+  setTimeout(() => {
+    if (dragTarget.value && !document.querySelector(':hover')?.closest('[data-drop-zone]')) {
+      dragTarget.value = null
+    }
+  }, 10)
 }
 
 const onDrop = (event: DragEvent, index?: number) => {
   event.preventDefault()
-  event.stopPropagation()
-
-  const blockType = event.dataTransfer?.getData('block-type')
-
-  if (!blockType) {
-    return
-  }
-
-  const definition = componentRegistryInstance.get(blockType)
-
-  if (!definition) {
-    return
-  }
-
-  const newComponent: ComponentInstance = {
-    id: `component-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-    type: blockType,
-    data: { ...definition.defaultData },
-    position: { x: 0, y: 0 },
-    size: { width: 100, height: 100 }
-  }
-
-  if (index !== undefined) {
-    pageComponents.value.splice(index, 0, newComponent)
-  } else {
-    pageComponents.value.push(newComponent)
-  }
-
-  // Clear drag state immediately after drop
-  dragTarget.value = null
-  lastDragTarget.value = null
-  isDragging.value = false
   
-  // Select the new component
-  selectComponent(newComponent.id)
+  // Check if this is a component reorder or new block
+  const componentId = event.dataTransfer?.getData('component-id')
+  const blockType = event.dataTransfer?.getData('block-type')
+  
+  if (componentId && index !== undefined) {
+    // Component reordering
+    const componentIndex = pageComponents.value.findIndex(c => c.id === componentId)
+    if (componentIndex === -1) return
+
+    const [movedComponent] = pageComponents.value.splice(componentIndex, 1)
+    if (movedComponent) {
+      // Adjust index if we're moving from before the target position
+      const adjustedIndex = componentIndex < index ? index - 1 : index
+      pageComponents.value.splice(adjustedIndex, 0, movedComponent)
+      
+      // Clear drag state and select moved component
+      dragTarget.value = null
+      selectComponent(movedComponent.id)
+    }
+  } else if (blockType) {
+    // New block creation
+    const definition = componentRegistryInstance.get(blockType)
+    if (!definition) return
+
+    const newComponent: ComponentInstance = {
+      id: `component-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      type: blockType,
+      data: { ...definition.defaultData },
+      position: { x: 0, y: 0 },
+      size: { width: 100, height: 100 }
+    }
+
+    if (index !== undefined) {
+      pageComponents.value.splice(index, 0, newComponent)
+    } else {
+      pageComponents.value.push(newComponent)
+    }
+
+    // Clear drag state and select new component
+    dragTarget.value = null
+    selectComponent(newComponent.id)
+  }
 }
 
 const selectComponent = (id: string) => {
@@ -514,103 +521,24 @@ const updateComponent = (updates: Partial<ComponentInstance>) => {
 }
 
 const startDrag = (id: string, event: MouseEvent) => {
-  draggedComponentId.value = id
   // Implement drag and drop reordering logic here
+  console.log('Start drag for component:', id)
 }
 
-const onDragEnter = (event: DragEvent, index: number, position: 'above' | 'below') => {
-  // Prevent event bubbling to avoid flickering
-  event.stopPropagation()
-  event.preventDefault()
-  
-  if (!isDragging.value) return
-  
-  // Throttle events to prevent constant firing
-  const now = Date.now()
-  if (now - lastDragEnterTime.value < 100) return // Only allow events every 100ms
-  
-  const newTarget = `${index}-${position}`
-  
-  // Only update if this is a genuinely new target
-  if (lastDragTarget.value !== newTarget) {
-    lastDragTarget.value = newTarget
-    dragTarget.value = newTarget
-    lastDragEnterTime.value = now
-  }
-}
-
-const onDragLeave = (event: DragEvent, index: number, position: 'above' | 'below') => {
-  // Prevent event bubbling to avoid flickering
-  event.stopPropagation()
-  event.preventDefault()
-  
-  if (!isDragging.value) return
-  
-  // Throttle events to prevent constant firing
-  const now = Date.now()
-  if (now - lastDragLeaveTime.value < 100) return // Only allow events every 100ms
-  
-  const currentTarget = `${index}-${position}`
-  
-  // Only clear if we're actually leaving the current target
-  if (dragTarget.value === currentTarget) {
-    // Don't clear immediately - wait a bit to see if we enter another target
-    // This prevents flickering when moving between adjacent drop zones
-    setTimeout(() => {
-      if (dragTarget.value === currentTarget) {
-        dragTarget.value = null
-      }
-    }, 50)
-  }
-  
-  lastDragLeaveTime.value = now
-}
-
-const onDragEnterInitial = (event: DragEvent) => {
-  // Prevent event bubbling to avoid flickering
-  event.stopPropagation()
-  
-  if (!isDragging.value) return
-  
-  // Throttle events to prevent constant firing
-  const now = Date.now()
-  if (now - lastDragEnterTime.value < 100) return // Only allow events every 100ms
-  
-  // Only update if this is a genuinely new target
-  if (lastDragTarget.value !== 'initial') {
-    lastDragTarget.value = 'initial'
-    dragTarget.value = 'initial'
-    lastDragEnterTime.value = now
-  }
-}
-
-const onDragLeaveInitial = (event: DragEvent) => {
-  // Prevent event bubbling to avoid flickering
-  event.stopPropagation()
-
-  if (!isDragging.value) return
-
-  // Throttle events to prevent constant firing
-  const now = Date.now()
-  if (now - lastDragLeaveTime.value < 100) return // Only allow events every 100ms
-
-  // Only clear if we're actually leaving the current target
-  if (dragTarget.value === 'initial') {
-    // Don't clear immediately - wait a bit to see if we enter another target
-    setTimeout(() => {
-      if (dragTarget.value === 'initial') {
-        dragTarget.value = null
-      }
-    }, 50)
-  }
-
-  lastDragLeaveTime.value = now
-}
-
-// Global drag end handler to clear any stuck drag states
+// Global drag end handler to reset dragging state
 const onDragEnd = () => {
-  dragTarget.value = null
-  lastDragTarget.value = null
   isDragging.value = false
+  dragTarget.value = null
 }
+
+// Component drag start handler for reordering
+const onComponentDragStart = (event: DragEvent, component: ComponentInstance, index: number) => {
+  if (event.dataTransfer) {
+    event.dataTransfer.setData('component-id', component.id)
+    event.dataTransfer.effectAllowed = 'move'
+  }
+  isDragging.value = true
+}
+
+
 </script>
