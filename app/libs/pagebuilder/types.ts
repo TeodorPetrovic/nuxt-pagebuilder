@@ -28,7 +28,7 @@ export interface Page {
 export interface ComponentOption {
   name: string
   label: string
-  type: 'text' | 'number' | 'boolean' | 'select' | 'color' | 'image' | 'textarea' | 'json' | 'group' | 'spacingBox' | 'heading'
+  type: 'text' | 'number' | 'boolean' | 'select' | 'color' | 'image' | 'textarea' | 'json' | 'group' | 'spacingBox' | 'heading' | 'button'
   defaultValue?: any
   required?: boolean
   options?: { label: string; value: any }[] | ComponentOption[] // For select type or group type

@@ -1,7 +1,7 @@
 <template>
   <div class="space-y-6">
     <!-- Component Options -->
-    <div v-if="component.schema && component.schema.length > 0" class="space-y-6">
+    <div v-if="component.schema && component.schema.length > 0" class="space-y-6 overflow-y-scroll">
       <div v-for="option in component.schema" :key="option.name">
         <label class="block text-sm text-gray-800 pb-2">
           {{ option.label }}
@@ -13,6 +13,9 @@
           class="w-full" @update:model-value="updateOption(option.name, $event)" /> -->
 
         <HeadingOptionField v-if="option.type === 'heading'" :modelValue="getTextValues(option.name)" @update:modelValue="updateTextValues(option.name, $event)" />
+
+        <!-- Button Option Field -->
+        <ButtonOptionField v-else-if="option.type === 'button'" :modelValue="getButtonValues(option.name)" @update:modelValue="updateButtonValues(option.name, $event)" />
 
         <!-- Spacing Box -->
         <SpacingBox v-else-if="option.type === 'spacingBox'" :model-value="getSpacingValue(option.name)"
@@ -67,6 +70,7 @@ import type { ComponentDefinition } from '~/libs/pagebuilder/types'
 import SpacingBox from './SpacingBox.vue'
 import TextOptionField from './option-fields/HeadingOptionField.vue'
 import HeadingOptionField from './option-fields/HeadingOptionField.vue'
+import ButtonOptionField from './option-fields/ButtonOptionField.vue'
 
 interface Props {
   component: ComponentDefinition & {
@@ -130,6 +134,15 @@ const getTextValues = (name: string) => {
 }
 
 const updateTextValues = (name: string, value: any) => {
+  updateOption(name, value)
+}
+
+const getButtonValues = (name: string) => {
+  const button = props.component.data[name]
+  return button
+}
+
+const updateButtonValues = (name: string, value: any) => {
   updateOption(name, value)
 }
 

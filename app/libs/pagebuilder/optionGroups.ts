@@ -5,6 +5,14 @@ import type { ComponentOption } from './types'
 // ENHANCED OPTION BUILDERS WITH GROUPING
 // ========================================
 
+export function pixelSizeOption(name: string, label: string, defaultValue: number = 16): ComponentOption {
+  return optionTypes.number(name, label, {
+    defaultValue,
+    description: `Set ${label.toLowerCase()} in pixels`,
+    validation: { min: 8, max: 200 }
+  })
+}
+
 export function simpleColorOption(name: string, label: string, defaultValue: string = '#000000'): ComponentOption {
   return optionTypes.color(name, label, {
     defaultValue,
@@ -22,6 +30,13 @@ export function simpleTextOption(name: string, label: string, placeholder: strin
 export function simpleHeadingOption(name: string, label: string, placeholder: string = ''): ComponentOption {
   return optionTypes.heading(name, label, {
     description: `Enter ${label.toLowerCase()}`,
+    defaultValue: placeholder
+  })
+}
+
+export function simpleButtonOption(name: string, label: string, placeholder: string = ''): ComponentOption {
+  return optionTypes.button(name, label, {
+    description: `Configure ${label.toLowerCase()}`,
     defaultValue: placeholder
   })
 }
@@ -134,33 +149,10 @@ export function groupedMiniHereBlockOptions(): ComponentOption[] {
     alignmentOption('alignment', 'Content Alignment'),
     // simpleTextareaOption('content', 'Text Content', 'Enter your text content'),
     
-    // // === TEXT STYLE ===
-    // pixelSizeOption('textSize', 'Text Size (px)', 16),
-    // simpleColorOption('textColor', 'Text Color', '#4b5563'),
-    // simpleBooleanOption('textBold', 'Text Bold', false),
-    // simpleBooleanOption('textItalic', 'Text Italic', false),
+    // === BUTTON ===
+    simpleButtonOption('button', 'Button', 'Configure button'),
     
-    // // === BUTTON ===
-    // // simpleTextOption('buttonText', 'Button Text', ''),
-    // optionTypes.select('buttonVariant', 'Button Variant', [
-    //   { label: 'Solid', value: 'solid' },
-    //   { label: 'Outline', value: 'outline' },
-    //   { label: 'Ghost', value: 'ghost' }
-    // ], {
-    //   defaultValue: 'solid',
-    //   description: 'Set button style'
-    // }),
-    // optionTypes.select('buttonSize', 'Button Size', [
-    //   { label: 'Small', value: 'sm' },
-    //   { label: 'Medium', value: 'md' },
-    //   { label: 'Large', value: 'lg' }
-    // ], {
-    //   defaultValue: 'md',
-    //   description: 'Set button size'
-    // }),
-    // alignmentOption('buttonAlignment', 'Button Alignment'),
-    
-    // // === SPACING ===
+    // === SPACING ===
     spacingBoxOption('spacing', 'Spacing')
   ]
 }

@@ -101,5 +101,12 @@ export const optionTypes = {
     label,
     type: 'spacingBox',
     ...config
+  }),
+
+  button: (name: string, label: string, config: Partial<ComponentOption> = {}): ComponentOption => ({
+    name,
+    label,
+    type: 'button',
+    ...config
   })
 }
