@@ -88,5 +88,12 @@ export const optionTypes = {
     label,
     type: 'json',
     ...config
+  }),
+  
+  spacingBox: (name: string, label: string, config: Partial<ComponentOption> = {}): ComponentOption => ({
+    name,
+    label,
+    type: 'spacingBox',
+    ...config
   })
 }

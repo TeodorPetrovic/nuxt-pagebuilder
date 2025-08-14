@@ -37,6 +37,10 @@
         <UTextarea v-else-if="option.type === 'json'" v-model="jsonString" :placeholder="option.description"
           class="w-full" @update:model-value="updateJsonOption(option.name, $event)" />
 
+        <!-- Spacing Box -->
+        <SpacingBox v-else-if="option.type === 'spacingBox'" :model-value="getSpacingValue(option.name)"
+          @update:model-value="updateSpacingOption(option.name, $event)" />
+
         <!-- Default Text Input -->
         <UInput v-else v-model="component.data[option.name]" :placeholder="option.description" class="w-full"
           @update:model-value="updateOption(option.name, $event)" />
@@ -58,6 +62,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { ComponentDefinition } from '~/libs/pagebuilder/types'
+import SpacingBox from './SpacingBox.vue'
 
 interface Props {
   component: ComponentDefinition & {
@@ -113,5 +118,52 @@ const updateJsonOption = (name: string, value: string) => {
     // Invalid JSON, don't update
     console.warn('Invalid JSON:', error)
   }
+}
+
+const getSpacingValue = (name: string) => {
+  const spacing = props.component.data[name]
+  console.log('getSpacingValue called with:', name, 'data:', spacing, 'full component data:', props.component.data)
+  
+  if (spacing && typeof spacing === 'object') {
+    return spacing
+  }
+  
+  // Check if component has old individual spacing properties - migrate them
+  const legacySpacing = {
+    paddingTop: props.component.data.paddingTop || 0,
+    paddingRight: props.component.data.paddingRight || 0,
+    paddingBottom: props.component.data.paddingBottom || 0,
+    paddingLeft: props.component.data.paddingLeft || 0,
+    marginTop: props.component.data.marginTop || 0,
+    marginRight: props.component.data.marginRight || 0,
+    marginBottom: props.component.data.marginBottom || 0,
+    marginLeft: props.component.data.marginLeft || 0
+  }
+  
+  // If any legacy values exist, use them
+  const hasLegacyValues = Object.values(legacySpacing).some(val => val > 0)
+  if (hasLegacyValues) {
+    console.log('Using legacy spacing values:', legacySpacing)
+    return legacySpacing
+  }
+  
+  // Return default spacing structure if not found
+  const defaultSpacing = {
+    paddingTop: 0,
+    paddingRight: 0,
+    paddingBottom: 0,
+    paddingLeft: 0,
+    marginTop: 0,
+    marginRight: 0,
+    marginBottom: 0,
+    marginLeft: 0
+  }
+  console.log('Using default spacing:', defaultSpacing)
+  return defaultSpacing
+}
+
+const updateSpacingOption = (name: string, value: any) => {
+  console.log('updateSpacingOption called with:', name, 'value:', value)
+  updateOption(name, value)
 }
 </script>

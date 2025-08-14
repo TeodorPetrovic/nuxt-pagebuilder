@@ -55,14 +55,16 @@ interface Props {
     buttonAlignment?: 'left' | 'center' | 'right'
     
     // Spacing group
-    paddingTop?: number
-    paddingRight?: number
-    paddingBottom?: number
-    paddingLeft?: number
-    marginTop?: number
-    marginRight?: number
-    marginBottom?: number
-    marginLeft?: number
+    spacing?: {
+      paddingTop?: number
+      paddingRight?: number
+      paddingBottom?: number
+      paddingLeft?: number
+      marginTop?: number
+      marginRight?: number
+      marginBottom?: number
+      marginLeft?: number
+    }
   }
 }
 
@@ -101,16 +103,19 @@ const buttonAlignmentClass = computed(() => {
 })
 
 // Container styles (spacing)
-const containerStyles = computed(() => ({
-  paddingTop: `${props.data.paddingTop || 0}px`,
-  paddingRight: `${props.data.paddingRight || 0}px`,
-  paddingBottom: `${props.data.paddingBottom || 0}px`,
-  paddingLeft: `${props.data.paddingLeft || 0}px`,
-  marginTop: `${props.data.marginTop || 0}px`,
-  marginRight: `${props.data.marginRight || 0}px`,
-  marginBottom: `${props.data.marginBottom || 0}px`,
-  marginLeft: `${props.data.marginLeft || 0}px`
-}))
+const containerStyles = computed(() => {
+  const spacing = props.data.spacing || {}
+  return {
+    paddingTop: `${spacing.paddingTop || 0}px`,
+    paddingRight: `${spacing.paddingRight || 0}px`,
+    paddingBottom: `${spacing.paddingBottom || 0}px`,
+    paddingLeft: `${spacing.paddingLeft || 0}px`,
+    marginTop: `${spacing.marginTop || 0}px`,
+    marginRight: `${spacing.marginRight || 0}px`,
+    marginBottom: `${spacing.marginBottom || 0}px`,
+    marginLeft: `${spacing.marginLeft || 0}px`
+  }
+})
 
 // Heading styles (with full typography control)
 const headingStyles = computed(() => {
@@ -164,3 +169,5 @@ const getButtonColor = (color?: string) => {
   return 'primary' // Default color
 }
 </script>
+
+

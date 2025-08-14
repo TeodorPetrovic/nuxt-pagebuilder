@@ -355,7 +355,7 @@ const templateOptions = [
 
 // Block definitions from registry - only use the components we actually implemented
 const textBlocks = computed(() => [
-  { name: 'text-block', label: 'Mini Hero', description: 'Rich text content with formatting options.', icon: '¶' },
+  { name: 'mini-hero', label: 'Mini Hero', description: 'Rich text content with formatting options.', icon: '¶' },
   { name: 'paragraph-block', label: 'Paragraph', description: 'Simple paragraph text with basic styling.', icon: '📝' }
 ])
 
@@ -512,12 +512,12 @@ const updateComponent = (updates: Partial<ComponentInstance>) => {
       pageComponents.value[index] = {
         ...currentComponent,
         ...updates,
-        // Ensure required properties are always present
+        // Ensure required properties are always present, but use updated data if provided
         id: currentComponent.id,
         type: currentComponent.type,
-        data: currentComponent.data,
-        position: currentComponent.position,
-        size: currentComponent.size
+        data: updates.data || currentComponent.data,
+        position: updates.position || currentComponent.position,
+        size: updates.size || currentComponent.size
       }
     }
   }

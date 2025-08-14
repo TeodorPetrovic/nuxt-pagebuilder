@@ -1,7 +1,7 @@
 import { componentRegistry } from './registry'
 import { createComponentDefinition, optionTypes } from './componentBuilder'
 import { groupedTextBlockOptions } from './optionGroups'
-import TextBlock from '~/components/PageBuilder/Components/TextBlock.vue'
+import MiniHero from '~/components/PageBuilder/Components/MiniHero.vue'
 import ImageBlock from '~/components/PageBuilder/Components/ImageBlock.vue'
 import ParagraphBlock from '~/components/PageBuilder/Components/ParagraphBlock.vue'
 import ColumnsBlock from '~/components/PageBuilder/Components/ColumnsBlock.vue'
@@ -10,12 +10,12 @@ import ContainerBlock from '~/components/PageBuilder/Components/ContainerBlock.v
 
 // Register Text Block Component
 const textBlockDefinition = createComponentDefinition({
-  name: 'text-block',
+  name: 'mini-hero',
   displayName: 'Mini Hero',
   category: 'text',
   icon: '¶',
   description: 'Rich text content with formatting options',
-  component: TextBlock,
+  component: MiniHero,
   schema: groupedTextBlockOptions(),
   defaultData: {
     // Basic content
@@ -43,14 +43,16 @@ const textBlockDefinition = createComponentDefinition({
     buttonAlignment: 'left',
     
     // Spacing group
-    paddingTop: 0,
-    paddingRight: 0,
-    paddingBottom: 0,
-    paddingLeft: 0,
-    marginTop: 0,
-    marginRight: 0,
-    marginBottom: 0,
-    marginLeft: 0
+    spacing: {
+      paddingTop: 0,
+      paddingRight: 0,
+      paddingBottom: 0,
+      paddingLeft: 0,
+      marginTop: 0,
+      marginRight: 0,
+      marginBottom: 0,
+      marginLeft: 0
+    }
   }
 })
 

@@ -81,6 +81,25 @@ export function spacingOption(name: string, label: string, defaultValue: number 
   })
 }
 
+/**
+ * Chrome DevTools-style spacing box option (combines all padding/margin into one visual component)
+ */
+export function spacingBoxOption(name: string = 'spacing', label: string = 'Spacing'): ComponentOption {
+  return optionTypes.spacingBox(name, label, {
+    defaultValue: {
+      paddingTop: 0,
+      paddingRight: 0,
+      paddingBottom: 0,
+      paddingLeft: 0,
+      marginTop: 0,
+      marginRight: 0,
+      marginBottom: 0,
+      marginLeft: 0
+    },
+    description: 'Configure padding and margin using a visual box model'
+  })
+}
+
 // ========================================
 // OPTION GROUPS (Mini-Components)
 // ========================================
@@ -161,29 +180,11 @@ export function buttonGroup(): ComponentOption[] {
 }
 
 /**
- * Spacing group (Chrome DevTools style)
+ * Spacing group (Chrome DevTools style with visual box editor)
  */
 export function spacingGroup(): ComponentOption[] {
   return [
-    {
-      type: 'group',
-      name: 'spacingGroup',
-      label: 'Spacing',
-      description: 'Configure padding and margin',
-      options: [
-        // Padding
-        spacingOption('paddingTop', 'Padding Top', 0),
-        spacingOption('paddingRight', 'Padding Right', 0),
-        spacingOption('paddingBottom', 'Padding Bottom', 0),
-        spacingOption('paddingLeft', 'Padding Left', 0),
-        
-        // Margin
-        spacingOption('marginTop', 'Margin Top', 0),
-        spacingOption('marginRight', 'Margin Right', 0),
-        spacingOption('marginBottom', 'Margin Bottom', 0),
-        spacingOption('marginLeft', 'Margin Left', 0)
-      ]
-    } as any
+    spacingBoxOption('spacing', 'Spacing')
   ]
 }
 
@@ -235,14 +236,7 @@ export function groupedTextBlockOptions(): ComponentOption[] {
     alignmentOption('buttonAlignment', 'Button Alignment'),
     
     // === SPACING ===
-    spacingOption('paddingTop', 'Padding Top (px)', 0),
-    spacingOption('paddingRight', 'Padding Right (px)', 0),
-    spacingOption('paddingBottom', 'Padding Bottom (px)', 0),
-    spacingOption('paddingLeft', 'Padding Left (px)', 0),
-    spacingOption('marginTop', 'Margin Top (px)', 0),
-    spacingOption('marginRight', 'Margin Right (px)', 0),
-    spacingOption('marginBottom', 'Margin Bottom (px)', 0),
-    spacingOption('marginLeft', 'Margin Left (px)', 0)
+    spacingBoxOption('spacing', 'Spacing')
   ]
 }
 
