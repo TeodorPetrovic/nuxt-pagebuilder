@@ -14,7 +14,7 @@
     
     <div v-if="data.button?.value" class="text-block-button mt-4" :class="buttonAlignmentClass">
       <UButton 
-        :color="getButtonColor(data.button.color)"
+        :color="data.button.color"
         :variant="data.button.variant || 'solid'"
         :size="data.button.size || 'md'"
       >
@@ -53,7 +53,7 @@ interface Props {
     // Button group
     button?: {
       value?: string
-      color?: string
+      color?: 'primary' | 'secondary' | 'success' | 'info' | 'warning' | 'error' | 'neutral'
       variant?: 'solid' | 'outline' | 'ghost'
       size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl'
       alignment?: 'left' | 'center' | 'right'
@@ -75,10 +75,7 @@ interface Props {
 
 const props = defineProps<Props>()
 
-// Content alignment
 const alignmentClass = computed(() => `text-${props.data.alignment || 'left'}`)
-
-// Button alignment (can override content alignment)
 const buttonAlignmentClass = computed(() => `text-${props.data.button?.alignment || props.data.alignment || 'left'}`)
 
 // Container styles (spacing)

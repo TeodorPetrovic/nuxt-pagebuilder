@@ -1,12 +1,11 @@
 <template>
-  <div class="space-y-6">
-    <!-- Component Options -->
-    <div v-if="component.schema && component.schema.length > 0" class="space-y-6 overflow-y-scroll">
-      <div v-for="option in component.schema" :key="option.name">
-        <label class="block text-sm text-gray-800 pb-2">
-          {{ option.label }}
-          <span v-if="option.required" class="text-red-500">*</span>
-        </label>
+  <!-- Component Options -->
+  <div v-if="component.schema && component.schema.length > 0" class="space-y-6">
+    <div v-for="option in component.schema" :key="option.name" class="space-y-2">
+      <label class="block text-sm text-gray-800">
+        {{ option.label }}
+        <span v-if="option.required" class="text-red-500">*</span>
+      </label>
 
         <!-- Text Input -->
         <!-- <UInput v-if="option.type === 'text'" v-model="component.data[option.name]" :placeholder="option.description"
@@ -50,17 +49,16 @@
         <UInput v-else v-model="component.data[option.name]" :placeholder="option.description" class="w-full"
           @update:model-value="updateOption(option.name, $event)" />
 
-        <!-- Validation Error -->
-        <p v-if="option.validation?.message" class="text-xs text-red-500">
-          {{ option.validation.message }}
-        </p>
-      </div>
+      <!-- Validation Error -->
+      <p v-if="option.validation?.message" class="text-xs text-red-500">
+        {{ option.validation.message }}
+      </p>
     </div>
+  </div>
 
-    <!-- No Options Available -->
-    <div v-else class="text-center text-gray-500 py-4">
-      <p class="text-sm">No configurable options for this component</p>
-    </div>
+  <!-- No Options Available -->
+  <div v-else class="text-center text-gray-500 py-4">
+    <p class="text-sm">No configurable options for this component</p>
   </div>
 </template>
 

@@ -248,9 +248,9 @@
       <!-- Right Sidebar - Properties Panel -->
       <div v-if="isEditing" :class="[
         rightSidebarCollapsed ? 'w-12' : 'w-80',
-        'bg-white border-l border-gray-200 flex flex-col transition-all duration-300 ease-in-out'
+        'bg-white border-l border-gray-200 flex flex-col transition-all duration-300 ease-in-out h-full'
       ]">
-        <div v-if="!rightSidebarCollapsed">
+        <div v-if="!rightSidebarCollapsed" class="flex flex-col h-full min-h-0">
           <!-- Header with tabs and collapse button -->
           <div class="flex items-center justify-between p-3 border-b border-gray-200">
             <h3 class="text-sm font-medium text-gray-900">
@@ -276,35 +276,33 @@
             </button>
           </div>
 
-          <div class="flex-1 flex flex-col overflow-hidden">
+          <div class="flex-1 flex flex-col overflow-hidden min-h-0">
             <!-- Properties Content -->
-            <div class="flex-1 overflow-y-auto p-6">
+            <div class="flex-1 overflow-y-auto p-6 min-h-0 max-h-full">
               <!-- Document Tab -->
-              <div v-if="activePropertyTab === 'document'" class="space-y-6">
-                <div class="space-y-4">
-                  <h3 class="text-sm font-medium text-gray-900">Page Attributes</h3>
-                  <div class="space-y-3">
-                    <div>
-                      <label class="block text-sm font-medium text-gray-700 mb-1">Page Title</label>
-                      <UInput v-model="pageTitle" placeholder="Enter page title" class="w-full" />
-                    </div>
-                    <div>
-                      <label class="block text-sm font-medium text-gray-700 mb-1">Slug</label>
-                      <UInput v-model="pageSlug" placeholder="page-slug" class="w-full" />
-                    </div>
-                    <div>
-                      <label class="block text-sm font-medium text-gray-700 mb-1">Template</label>
-                      <USelect v-model="pageTemplate" :options="templateOptions" placeholder="Select template"
-                        class="w-full" />
-                    </div>
+              <div v-if="activePropertyTab === 'document'" class="space-y-4">
+                <h3 class="text-sm font-medium text-gray-900">Page Attributes</h3>
+                <div class="space-y-3">
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Page Title</label>
+                    <UInput v-model="pageTitle" placeholder="Enter page title" class="w-full" />
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Slug</label>
+                    <UInput v-model="pageSlug" placeholder="page-slug" class="w-full" />
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Template</label>
+                    <USelect v-model="pageTemplate" :options="templateOptions" placeholder="Select template"
+                      class="w-full" />
                   </div>
                 </div>
               </div>
 
               <!-- Block Tab -->
-              <div v-else-if="activePropertyTab === 'block'" class="space-y-6">
-                <!-- Block Info -->
+              <div v-else-if="activePropertyTab === 'block'">
                 <div v-if="selectedComponent" class="space-y-6">
+                  <!-- Block Info -->
                   <div class="flex items-start space-x-4">
                     <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
                       <UIcon :name="selectedComponent.icon" class="w-6 h-6 text-blue-600" />
@@ -316,7 +314,7 @@
                   </div>
 
                   <!-- Component Options -->
-                  <div class="border-t border-gray-200 pt-6 animate-in slide-in-from-bottom-2 duration-300">
+                  <div class="border-t border-gray-200 pt-6">
                     <ComponentOptionsPanel :component="selectedComponent" @update="updateComponent" />
                   </div>
                 </div>
