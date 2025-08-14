@@ -28,10 +28,10 @@ export interface Page {
 export interface ComponentOption {
   name: string
   label: string
-  type: 'text' | 'number' | 'boolean' | 'select' | 'color' | 'image' | 'textarea' | 'json'
+  type: 'text' | 'number' | 'boolean' | 'select' | 'color' | 'image' | 'textarea' | 'json' | 'group'
   defaultValue?: any
   required?: boolean
-  options?: { label: string; value: any }[] // For select type
+  options?: { label: string; value: any }[] | ComponentOption[] // For select type or group type
   validation?: {
     min?: number
     max?: number
