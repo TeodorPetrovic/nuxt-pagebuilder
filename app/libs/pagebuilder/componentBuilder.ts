@@ -33,6 +33,12 @@ export function createComponentDefinition(config: {
 
 // Predefined option types for common use cases
 export const optionTypes = {
+  heading: (name: string, label: string, config: Partial<ComponentOption> = {}): ComponentOption => ({
+    name,
+    label,
+    type: 'heading',
+    ...config
+  }),
   text: (name: string, label: string, config: Partial<ComponentOption> = {}): ComponentOption => ({
     name,
     label,

@@ -1,58 +1,63 @@
 <template>
   <div class="text-block" :class="alignmentClass" :style="containerStyles">
-    <div v-if="data.heading" class="text-block-heading mb-3">
+    <div v-if="data.heading?.value" class="text-block-heading mb-3">
       <h2 :style="headingStyles">
-        {{ data.heading }}
+        {{ data.heading.value }}
       </h2>
     </div>
     
-    <div v-if="data.content" class="text-block-content">
+    <div v-if="data.content.value" class="text-block-content">
       <p :style="textStyles">
-        {{ data.content }}
+        {{ data.content.value }}
       </p>
     </div>
     
-    <div v-if="data.buttonText" class="text-block-button mt-4" :class="buttonAlignmentClass">
+    <div v-if="data.button?.value" class="text-block-button mt-4" :class="buttonAlignmentClass">
       <UButton 
-        :color="getButtonColor(data.buttonColor)"
-        :variant="data.buttonVariant || 'solid'"
-        :size="data.buttonSize || 'md'"
+        :color="getButtonColor(data.button.color)"
+        :variant="data.button.variant || 'solid'"
+        :size="data.button.size || 'md'"
       >
-        {{ data.buttonText }}
+        {{ data.button.value }}
       </UButton>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
 
 interface Props {
   data: {
     // Basic content
-    heading?: string
-    content?: string
     alignment?: 'left' | 'center' | 'right' | 'justify'
     
     // Heading group
-    headingSize?: number
-    headingBold?: boolean
-    headingItalic?: boolean
-    headingUnderline?: boolean
-    headingColor?: string
-    
+    heading?: {
+      value?: string,
+      size?: number,
+      color?: string,
+      bold?: boolean,
+      italic?: boolean,
+      underline?: boolean
+    },
+
     // Text group
-    textSize?: number
-    textColor?: string
-    textBold?: boolean
-    textItalic?: boolean
+    content: {
+      value?: string,
+      size?: number
+      color?: string
+      bold?: boolean
+      italic?: boolean
+    }
     
     // Button group
-    buttonText?: string
-    buttonColor?: string
-    buttonVariant?: 'solid' | 'outline' | 'ghost'
-    buttonSize?: 'xs' | 'sm' | 'md' | 'lg' | 'xl'
-    buttonAlignment?: 'left' | 'center' | 'right'
+    button?: {
+      value?: string
+      color?: string
+      variant?: 'solid' | 'outline' | 'ghost'
+      size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl'
+      alignment?: 'left' | 'center' | 'right'
+    }
     
     // Spacing group
     spacing?: {
@@ -71,36 +76,10 @@ interface Props {
 const props = defineProps<Props>()
 
 // Content alignment
-const alignmentClass = computed(() => {
-  const alignment = props.data.alignment || 'left'
-  switch (alignment) {
-    case 'left':
-      return 'text-left'
-    case 'center':
-      return 'text-center'
-    case 'right':
-      return 'text-right'
-    case 'justify':
-      return 'text-justify'
-    default:
-      return 'text-left'
-  }
-})
+const alignmentClass = computed(() => `text-${props.data.alignment || 'left'}`)
 
 // Button alignment (can override content alignment)
-const buttonAlignmentClass = computed(() => {
-  const alignment = props.data.buttonAlignment || props.data.alignment || 'left'
-  switch (alignment) {
-    case 'left':
-      return 'text-left'
-    case 'center':
-      return 'text-center'
-    case 'right':
-      return 'text-right'
-    default:
-      return 'text-left'
-  }
-})
+const buttonAlignmentClass = computed(() => `text-${props.data.button?.alignment || props.data.alignment || 'left'}`)
 
 // Container styles (spacing)
 const containerStyles = computed(() => {
@@ -120,21 +99,21 @@ const containerStyles = computed(() => {
 // Heading styles (with full typography control)
 const headingStyles = computed(() => {
   const styles: Record<string, string> = {
-    fontSize: `${props.data.headingSize || 32}px`,
-    color: props.data.headingColor || '#1f2937',
+    fontSize: `${props.data.heading?.size || 32}px`,
+    color: props.data.heading?.color || '#1f2937',
     margin: '0',
     lineHeight: '1.2'
   }
   
   // Font weight
-  if (props.data.headingBold) styles.fontWeight = 'bold'
+  if (props.data.heading?.bold) styles.fontWeight = 'bold'
   
   // Font style
-  if (props.data.headingItalic) styles.fontStyle = 'italic'
+  if (props.data.heading?.italic) styles.fontStyle = 'italic'
   
   // Text decoration
   let textDecoration = 'none'
-  if (props.data.headingUnderline) textDecoration = 'underline'
+  if (props.data.heading?.underline) textDecoration = 'underline'
   if (textDecoration !== 'none') styles.textDecoration = textDecoration
   
   return styles
@@ -143,17 +122,17 @@ const headingStyles = computed(() => {
 // Text styles (with full typography control)
 const textStyles = computed(() => {
   const styles: Record<string, string> = {
-    fontSize: `${props.data.textSize || 16}px`,
-    color: props.data.textColor || '#4b5563',
+    fontSize: `${props.data.content.size || 16}px`,
+    color: props.data.content.color || '#4b5563',
     lineHeight: '1.6',
     margin: '0'
   }
   
   // Font weight
-  if (props.data.textBold) styles.fontWeight = 'bold'
+  if (props.data.content.bold) styles.fontWeight = 'bold'
   
   // Font style
-  if (props.data.textItalic) styles.fontStyle = 'italic'
+  if (props.data.content.italic) styles.fontStyle = 'italic'
   
   return styles
 })

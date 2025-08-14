@@ -25,17 +25,23 @@
         </p>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-            <div class="text-3xl mb-3">📝</div>
+            <div class="mb-3">
+              <UIcon name="i-lucide-file-text" class="w-8 h-8 text-blue-600 mx-auto" />
+            </div>
             <h3 class="text-lg font-semibold text-gray-900 mb-2">Text Blocks</h3>
             <p class="text-gray-600">Create beautiful text content with customizable fonts, colors, and alignment.</p>
           </div>
           <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-            <div class="text-3xl mb-3">🖼️</div>
+            <div class="mb-3">
+              <UIcon name="i-lucide-image" class="w-8 h-8 text-green-600 mx-auto" />
+            </div>
             <h3 class="text-lg font-semibold text-gray-900 mb-2">Image Blocks</h3>
             <p class="text-gray-600">Add stunning images with various display options and responsive behavior.</p>
           </div>
           <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-            <div class="text-3xl mb-3">⚡</div>
+            <div class="mb-3">
+              <UIcon name="i-lucide-zap" class="w-8 h-8 text-yellow-600 mx-auto" />
+            </div>
             <h3 class="text-lg font-semibold text-gray-900 mb-2">Fast & Responsive</h3>
             <p class="text-gray-600">Built with Vue 3 and Nuxt 4 for optimal performance and user experience.</p>
           </div>

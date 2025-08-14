@@ -92,7 +92,7 @@
           <!-- Content Box -->
           <div class="content-box">
             <div class="content-dimensions">
-              {{ Math.max(200 - paddingLeft - paddingRight, 50) }} × {{ Math.max(100 - paddingTop - paddingBottom, 30) }}
+              NaN x NaN 
             </div>
           </div>
         </div>
@@ -102,7 +102,6 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
 
 interface Props {
   modelValue: {

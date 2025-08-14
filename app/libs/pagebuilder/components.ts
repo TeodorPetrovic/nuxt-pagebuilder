@@ -1,6 +1,6 @@
 import { componentRegistry } from './registry'
 import { createComponentDefinition, optionTypes } from './componentBuilder'
-import { groupedTextBlockOptions } from './optionGroups'
+import { groupedMiniHereBlockOptions } from './optionGroups'
 import MiniHero from '~/components/PageBuilder/Components/MiniHero.vue'
 import ImageBlock from '~/components/PageBuilder/Components/ImageBlock.vue'
 import ParagraphBlock from '~/components/PageBuilder/Components/ParagraphBlock.vue'
@@ -13,34 +13,41 @@ const textBlockDefinition = createComponentDefinition({
   name: 'mini-hero',
   displayName: 'Mini Hero',
   category: 'text',
-  icon: '¶',
+  icon: 'i-lucide-newspaper',
   description: 'Rich text content with formatting options',
   component: MiniHero,
-  schema: groupedTextBlockOptions(),
+  schema: groupedMiniHereBlockOptions(),
   defaultData: {
     // Basic content
-    heading: 'Welcome to Our Page',
-    content: 'This is a sample text block. You can customize the content, styling, and layout to match your design needs.',
     alignment: 'left',
     
     // Heading group
-    headingSize: 32,
-    headingBold: true,
-    headingItalic: false,
-    headingUnderline: false,
-    headingColor: '#1f2937',
+    heading: {
+      value: 'Welcome to Our Page',
+      size: 32,
+      bold: true,
+      italic: false,
+      underline: false,
+      color: '#1f2937'
+    },
     
     // Text group
-    textSize: 16,
-    textColor: '#4b5563',
-    textBold: false,
-    textItalic: false,
+    content: {
+      value: 'This is a sample text block. You can customize the content, styling, and layout to match your design needs.',
+      size: 16,
+      color: '#4b5563',
+      bold: false,
+      italic: false
+    },
     
     // Button group
-    buttonText: 'Learn More',
-    buttonVariant: 'solid',
-    buttonSize: 'md',
-    buttonAlignment: 'left',
+    button: {
+      value: 'Learn More',
+      color: 'primary',
+      variant: 'solid',
+      size: 'md',
+      alignment: 'left'
+    },
     
     // Spacing group
     spacing: {
@@ -61,7 +68,7 @@ const paragraphBlockDefinition = createComponentDefinition({
   name: 'paragraph-block',
   displayName: 'Paragraph',
   category: 'text',
-  icon: '📝',
+  icon: 'i-lucide-file-text',
   description: 'Simple paragraph text with basic styling',
   component: ParagraphBlock,
   schema: [
@@ -103,7 +110,7 @@ const imageBlockDefinition = createComponentDefinition({
   name: 'image-block',
   displayName: 'Image Block',
   category: 'media',
-  icon: '🖼',
+  icon: 'i-lucide-image',
   description: 'Images with various display options',
   component: ImageBlock,
   schema: [
@@ -153,7 +160,7 @@ const columnsBlockDefinition = createComponentDefinition({
   name: 'columns-block',
   displayName: 'Columns',
   category: 'layout',
-  icon: '📊',
+  icon: 'i-lucide-columns',
   description: 'Multi-column layout with customizable columns',
   component: ColumnsBlock,
   schema: [
@@ -207,7 +214,7 @@ const gridBlockDefinition = createComponentDefinition({
   name: 'grid-block',
   displayName: 'Grid',
   category: 'layout',
-  icon: '🔲',
+  icon: 'i-lucide-grid-3x3',
   description: 'Flexible grid layout with customizable cells',
   component: GridBlock,
   schema: [
@@ -288,7 +295,7 @@ const containerBlockDefinition = createComponentDefinition({
   name: 'container-block',
   displayName: 'Container',
   category: 'layout',
-  icon: '📦',
+  icon: 'i-lucide-box',
   description: 'Container with spacing, background, and border options',
   component: ContainerBlock,
   schema: [

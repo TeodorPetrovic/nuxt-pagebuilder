@@ -3,14 +3,20 @@
     <!-- Component Options -->
     <div v-if="component.schema && component.schema.length > 0" class="space-y-6">
       <div v-for="option in component.schema" :key="option.name">
-        <label class="block text-sm text-gray-800 pb-1">
+        <label class="block text-sm text-gray-800 pb-2">
           {{ option.label }}
           <span v-if="option.required" class="text-red-500">*</span>
         </label>
 
         <!-- Text Input -->
-        <UInput v-if="option.type === 'text'" v-model="component.data[option.name]" :placeholder="option.description"
-          class="w-full" @update:model-value="updateOption(option.name, $event)" />
+        <!-- <UInput v-if="option.type === 'text'" v-model="component.data[option.name]" :placeholder="option.description"
+          class="w-full" @update:model-value="updateOption(option.name, $event)" /> -->
+
+        <HeadingOptionField v-if="option.type === 'heading'" :modelValue="getTextValues(option.name)" @update:modelValue="updateTextValues(option.name, $event)" />
+
+        <!-- Spacing Box -->
+        <SpacingBox v-else-if="option.type === 'spacingBox'" :model-value="getSpacingValue(option.name)"
+          @update:model-value="updateSpacingOption(option.name, $event)" />
 
         <!-- Number Input -->
         <UInput v-else-if="option.type === 'number'" v-model="component.data[option.name]" type="number"
@@ -37,10 +43,6 @@
         <UTextarea v-else-if="option.type === 'json'" v-model="jsonString" :placeholder="option.description"
           class="w-full" @update:model-value="updateJsonOption(option.name, $event)" />
 
-        <!-- Spacing Box -->
-        <SpacingBox v-else-if="option.type === 'spacingBox'" :model-value="getSpacingValue(option.name)"
-          @update:model-value="updateSpacingOption(option.name, $event)" />
-
         <!-- Default Text Input -->
         <UInput v-else v-model="component.data[option.name]" :placeholder="option.description" class="w-full"
           @update:model-value="updateOption(option.name, $event)" />
@@ -63,6 +65,8 @@
 import { computed } from 'vue'
 import type { ComponentDefinition } from '~/libs/pagebuilder/types'
 import SpacingBox from './SpacingBox.vue'
+import TextOptionField from './option-fields/HeadingOptionField.vue'
+import HeadingOptionField from './option-fields/HeadingOptionField.vue'
 
 interface Props {
   component: ComponentDefinition & {
@@ -120,14 +124,23 @@ const updateJsonOption = (name: string, value: string) => {
   }
 }
 
+const getTextValues = (name: string) => {
+  const text = props.component.data[name]
+  return text
+}
+
+const updateTextValues = (name: string, value: any) => {
+  updateOption(name, value)
+}
+
 const getSpacingValue = (name: string) => {
   const spacing = props.component.data[name]
   console.log('getSpacingValue called with:', name, 'data:', spacing, 'full component data:', props.component.data)
-  
+
   if (spacing && typeof spacing === 'object') {
     return spacing
   }
-  
+
   // Check if component has old individual spacing properties - migrate them
   const legacySpacing = {
     paddingTop: props.component.data.paddingTop || 0,
@@ -139,14 +152,14 @@ const getSpacingValue = (name: string) => {
     marginBottom: props.component.data.marginBottom || 0,
     marginLeft: props.component.data.marginLeft || 0
   }
-  
+
   // If any legacy values exist, use them
   const hasLegacyValues = Object.values(legacySpacing).some(val => val > 0)
   if (hasLegacyValues) {
     console.log('Using legacy spacing values:', legacySpacing)
     return legacySpacing
   }
-  
+
   // Return default spacing structure if not found
   const defaultSpacing = {
     paddingTop: 0,

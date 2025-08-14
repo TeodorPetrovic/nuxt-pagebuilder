@@ -24,113 +24,127 @@
     <!-- Main Content Area -->
     <div class="flex-1 flex overflow-hidden">
       <!-- Left Sidebar - Block Library -->
-      <div v-if="isEditing" class="w-80 bg-white border-r border-gray-200 flex flex-col">
-        <!-- Header with collapse button -->
-        <div class="flex items-center justify-between p-3 border-b border-gray-200">
-          <h3 class="text-sm font-medium text-gray-900">Block Library</h3>
-          <UButton variant="ghost" :icon="leftSidebarCollapsed ? 'i-lucide-chevron-right' : 'i-lucide-chevron-left'"
-            size="xs" @click="leftSidebarCollapsed = !leftSidebarCollapsed" />
+      <div v-if="isEditing" :class="[
+        leftSidebarCollapsed ? 'w-12' : 'w-80',
+        'bg-white border-r border-gray-200 flex flex-col transition-all duration-300 ease-in-out'
+      ]">
+        <div v-if="!leftSidebarCollapsed">
+          <!-- Header with collapse button -->
+          <div class="flex items-center justify-between p-3 border-b border-gray-200">
+            <h3 class="text-sm font-medium text-gray-900">Block Library</h3>
+            <UButton variant="ghost" icon="i-lucide-chevron-left" size="xs"
+              @click="leftSidebarCollapsed = !leftSidebarCollapsed" />
+          </div>
+
+          <div class="flex-1 flex flex-col">
+            <!-- Search Bar -->
+            <div class="p-3 border-b border-gray-200">
+              <UInput v-model="searchQuery" placeholder="Search blocks..." icon="i-lucide-search" variant="outline"
+                size="sm" class="w-full" />
+            </div>
+
+            <!-- Tabs -->
+            <div class="flex border-b border-gray-200">
+              <button v-for="tab in tabs" :key="tab.id" @click="activeTab = tab.id" :class="[
+                'flex-1 px-3 py-2 text-sm font-medium border-b-2 transition-colors',
+                activeTab === tab.id
+                  ? 'border-blue-500 text-blue-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700'
+              ]">
+                {{ tab.label }}
+              </button>
+            </div>
+
+            <!-- Block Categories -->
+            <div class="flex-1 overflow-y-auto p-3">
+              <div v-if="activeTab === 'blocks'" class="space-y-4">
+                <!-- Text Category -->
+                <div class="space-y-2">
+                  <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider">TEXT</h3>
+                  <div class="space-y-1">
+                    <div v-for="block in filteredTextBlocks" :key="block.name"
+                      class="flex items-center p-2 hover:bg-gray-50 rounded-lg cursor-move transition-colors group"
+                      draggable="true" @dragstart="onDragStart($event, block)">
+                      <div
+                        class="w-6 h-6 bg-blue-100 rounded flex items-center justify-center mr-2 group-hover:bg-blue-200 transition-colors">
+                        <UIcon :name="block.icon" class="w-6 h-6" />
+                      </div>
+                      <div class="flex-1 min-w-0">
+                        <div class="font-medium text-gray-900 text-sm truncate">{{ block.label }}</div>
+                        <div class="text-xs text-gray-500 truncate">{{ block.description }}</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Media Category -->
+                <div class="space-y-2">
+                  <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider">MEDIA</h3>
+                  <div class="space-y-1">
+                    <div v-for="block in filteredMediaBlocks" :key="block.name"
+                      class="flex items-center p-2 hover:bg-gray-50 rounded-lg cursor-move transition-colors group"
+                      draggable="true" @dragstart="onDragStart($event, block)">
+                      <div
+                        class="w-6 h-6 bg-green-100 rounded flex items-center justify-center mr-2 group-hover:bg-green-200 transition-colors">
+                        <UIcon :name="block.icon" class="w-4 h-4 text-green-600" />
+                      </div>
+                      <div class="flex-1 min-w-0">
+                        <div class="font-medium text-gray-900 text-sm truncate">{{ block.label }}</div>
+                        <div class="text-xs text-gray-500 truncate">{{ block.description }}</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Layout Category -->
+                <div class="space-y-2">
+                  <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider">LAYOUT</h3>
+                  <div class="space-y-1">
+                    <div v-for="block in filteredLayoutBlocks" :key="block.name"
+                      class="flex items-center p-2 hover:bg-gray-50 rounded-lg cursor-move transition-colors group"
+                      draggable="true" @dragstart="onDragStart($event, block)">
+                      <div
+                        class="w-6 h-6 bg-purple-100 rounded flex items-center justify-center mr-2 group-hover:bg-purple-200 transition-colors">
+                        <UIcon :name="block.icon" class="w-4 h-4 text-purple-600" />
+                      </div>
+                      <div class="flex-1 min-w-0">
+                        <div class="font-medium text-gray-900 text-sm truncate">{{ block.label }}</div>
+                        <div class="text-xs text-gray-500 truncate">{{ block.description }}</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Patterns Tab -->
+              <div v-else-if="activeTab === 'patterns'" class="space-y-4">
+                <div class="text-center text-gray-500 py-6">
+                  <UIcon name="i-lucide-layout-grid" class="w-8 h-8 mx-auto mb-2 text-gray-300" />
+                  <p class="text-sm">No patterns available yet</p>
+                  <p class="text-xs text-gray-400">Patterns will appear here</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Bottom Info -->
+            <div class="p-2 border-t border-gray-200 bg-gray-50">
+              <div class="text-xs text-gray-500">
+                <div class="flex items-center justify-between">
+                  <span>Document</span>
+                  <span>→</span>
+                  <span>Paragraph</span>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div v-if="!leftSidebarCollapsed" class="flex-1 flex flex-col">
-          <!-- Search Bar -->
-          <div class="p-3 border-b border-gray-200">
-            <UInput v-model="searchQuery" placeholder="Search blocks..." icon="i-lucide-search" variant="outline"
-              size="sm" class="w-full" />
-          </div>
-
-          <!-- Tabs -->
-          <div class="flex border-b border-gray-200">
-            <button v-for="tab in tabs" :key="tab.id" @click="activeTab = tab.id" :class="[
-              'flex-1 px-3 py-2 text-sm font-medium border-b-2 transition-colors',
-              activeTab === tab.id
-                ? 'border-blue-500 text-blue-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700'
-            ]">
-              {{ tab.label }}
-            </button>
-          </div>
-
-          <!-- Block Categories -->
-          <div class="flex-1 overflow-y-auto p-3">
-            <div v-if="activeTab === 'blocks'" class="space-y-4">
-              <!-- Text Category -->
-              <div class="space-y-2">
-                <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider">TEXT</h3>
-                <div class="space-y-1">
-                  <div v-for="block in filteredTextBlocks" :key="block.name"
-                    class="flex items-center p-2 hover:bg-gray-50 rounded-lg cursor-move transition-colors group"
-                    draggable="true" @dragstart="onDragStart($event, block)">
-                    <div
-                      class="w-6 h-6 bg-blue-100 rounded flex items-center justify-center mr-2 group-hover:bg-blue-200 transition-colors">
-                      <span class="text-blue-600 text-xs font-semibold">{{ block.icon }}</span>
-                    </div>
-                    <div class="flex-1 min-w-0">
-                      <div class="font-medium text-gray-900 text-sm truncate">{{ block.label }}</div>
-                      <div class="text-xs text-gray-500 truncate">{{ block.description }}</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Media Category -->
-              <div class="space-y-2">
-                <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider">MEDIA</h3>
-                <div class="space-y-1">
-                  <div v-for="block in filteredMediaBlocks" :key="block.name"
-                    class="flex items-center p-2 hover:bg-gray-50 rounded-lg cursor-move transition-colors group"
-                    draggable="true" @dragstart="onDragStart($event, block)">
-                    <div
-                      class="w-6 h-6 bg-green-100 rounded flex items-center justify-center mr-2 group-hover:bg-green-200 transition-colors">
-                      <span class="text-green-600 text-xs font-semibold">{{ block.icon }}</span>
-                    </div>
-                    <div class="flex-1 min-w-0">
-                      <div class="font-medium text-gray-900 text-sm truncate">{{ block.label }}</div>
-                      <div class="text-xs text-gray-500 truncate">{{ block.description }}</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Layout Category -->
-              <div class="space-y-2">
-                <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider">LAYOUT</h3>
-                <div class="space-y-1">
-                  <div v-for="block in filteredLayoutBlocks" :key="block.name"
-                    class="flex items-center p-2 hover:bg-gray-50 rounded-lg cursor-move transition-colors group"
-                    draggable="true" @dragstart="onDragStart($event, block)">
-                    <div
-                      class="w-6 h-6 bg-purple-100 rounded flex items-center justify-center mr-2 group-hover:bg-purple-200 transition-colors">
-                      <span class="text-purple-600 text-xs font-semibold">{{ block.icon }}</span>
-                    </div>
-                    <div class="flex-1 min-w-0">
-                      <div class="font-medium text-gray-900 text-sm truncate">{{ block.label }}</div>
-                      <div class="text-xs text-gray-500 truncate">{{ block.description }}</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Patterns Tab -->
-            <div v-else-if="activeTab === 'patterns'" class="space-y-4">
-              <div class="text-center text-gray-500 py-6">
-                <UIcon name="i-lucide-layout-grid" class="w-8 h-8 mx-auto mb-2 text-gray-300" />
-                <p class="text-sm">No patterns available yet</p>
-                <p class="text-xs text-gray-400">Patterns will appear here</p>
-              </div>
-            </div>
-          </div>
-
-          <!-- Bottom Info -->
-          <div class="p-2 border-t border-gray-200 bg-gray-50">
-            <div class="text-xs text-gray-500">
-              <div class="flex items-center justify-between">
-                <span>Document</span>
-                <span>→</span>
-                <span>Paragraph</span>
-              </div>
-            </div>
+        <!-- Collapsed State -->
+        <div v-else class="flex flex-col items-center py-3">
+          <UButton variant="ghost" icon="i-lucide-chevron-right" size="xs"
+            @click="leftSidebarCollapsed = !leftSidebarCollapsed" class="rotate-0 hover:bg-gray-100" />
+          <div class="mt-4 transform -rotate-90 text-xs font-medium text-gray-500 whitespace-nowrap">
+            Blocks
           </div>
         </div>
       </div>
@@ -162,11 +176,11 @@
               <div v-for="(component, index) in pageComponents" :key="component.id" class="relative group">
                 <!-- Component Content with Drop Zones -->
                 <div class="relative">
-                                     <!-- Top Drop Zone -->
-                   <div v-if="isDragging" class="absolute top-0 left-0 right-0 h-[30px] z-10 transition-all duration-200 cursor-pointer"
-                     :class="dragTarget === `${index}-above` ? 'bg-blue-50 border-2 border-blue-400 border-dashed' : isDragging ? 'hover:bg-gray-50' : ''"
-                     @dragover.prevent @drop="onDrop($event, index)"
-                     @dragenter="onDragEnter(`${index}-above`)">
+                  <!-- Top Drop Zone -->
+                  <div v-if="isDragging"
+                    class="absolute top-0 left-0 right-0 h-[30px] z-10 transition-all duration-200 cursor-pointer"
+                    :class="dragTarget === `${index}-above` ? 'bg-blue-50 border-2 border-blue-400 border-dashed' : isDragging ? 'hover:bg-gray-50' : ''"
+                    @dragover.prevent @drop="onDrop($event, index)" @dragenter="onDragEnter(`${index}-above`)">
                     <div v-if="dragTarget === `${index}-above`" class="flex items-center justify-center h-full">
                       <div class="flex items-center space-x-2 text-blue-600 text-sm font-medium">
                         <UIcon name="i-lucide-plus" class="w-4 h-4" />
@@ -175,11 +189,11 @@
                     </div>
                   </div>
 
-                                     <!-- Bottom Drop Zone -->
-                   <div v-if="isDragging" class="absolute bottom-0 left-0 right-0 h-[30px] z-10 transition-all duration-200 cursor-pointer"
-                     :class="dragTarget === `${index}-below` ? 'bg-blue-50 border-2 border-blue-400 border-dashed' : isDragging ? 'hover:bg-gray-50' : ''"
-                     @dragover.prevent @drop="onDrop($event, index + 1)"
-                     @dragenter="onDragEnter(`${index}-below`)">
+                  <!-- Bottom Drop Zone -->
+                  <div v-if="isDragging"
+                    class="absolute bottom-0 left-0 right-0 h-[30px] z-10 transition-all duration-200 cursor-pointer"
+                    :class="dragTarget === `${index}-below` ? 'bg-blue-50 border-2 border-blue-400 border-dashed' : isDragging ? 'hover:bg-gray-50' : ''"
+                    @dragover.prevent @drop="onDrop($event, index + 1)" @dragenter="onDragEnter(`${index}-below`)">
                     <div v-if="dragTarget === `${index}-below`" class="flex items-center justify-center h-full">
                       <div class="flex items-center space-x-2 text-blue-600 text-sm font-medium">
                         <UIcon name="i-lucide-plus" class="w-4 h-4" />
@@ -189,11 +203,10 @@
                   </div>
 
                   <!-- Component Content -->
-                  <div class="border-2 border-transparent hover:border-blue-300 rounded-lg p-4 transition-colors cursor-move"
-                    :class="{ 'border-blue-500': selectedComponentId === component.id }"
-                    draggable="true"
-                    @dragstart="onComponentDragStart($event, component, index)"
-                    @click="selectComponent(component.id)">
+                  <div
+                    class="border-2 border-transparent hover:border-blue-300 rounded-lg p-4 transition-colors cursor-move"
+                    :class="{ 'border-blue-500': selectedComponentId === component.id }" draggable="true"
+                    @dragstart="onComponentDragStart($event, component, index)" @click="selectComponent(component.id)">
                     <ComponentRenderer :component="component" />
                   </div>
                 </div>
@@ -233,71 +246,97 @@
       </div>
 
       <!-- Right Sidebar - Properties Panel -->
-      <div v-if="isEditing" class="w-80 bg-white border-l border-gray-200 flex flex-col">
-        <!-- Header with collapse button -->
-        <div class="flex items-center justify-between p-3 border-b border-gray-200">
-          <h3 class="text-sm font-medium text-gray-900">
-            {{ selectedComponent ? `${selectedComponent.displayName} Properties` : 'Properties' }}
-          </h3>
-          <div class="flex items-center space-x-2">
-            <UButton v-if="selectedComponent" variant="ghost" icon="i-lucide-x" size="xs" @click="clearSelection"
-              title="Close Properties" />
-            <UButton variant="ghost" :icon="rightSidebarCollapsed ? 'i-lucide-chevron-left' : 'i-lucide-chevron-right'"
-              size="xs" @click="rightSidebarCollapsed = !rightSidebarCollapsed" />
+      <div v-if="isEditing" :class="[
+        rightSidebarCollapsed ? 'w-12' : 'w-80',
+        'bg-white border-l border-gray-200 flex flex-col transition-all duration-300 ease-in-out'
+      ]">
+        <div v-if="!rightSidebarCollapsed">
+          <!-- Header with tabs and collapse button -->
+          <div class="flex items-center justify-between p-3 border-b border-gray-200">
+            <h3 class="text-sm font-medium text-gray-900">
+              {{ selectedComponent ? `${selectedComponent.displayName} Properties` : 'Properties' }}
+            </h3>
+            <div class="flex items-center space-x-2">
+              <UButton v-if="selectedComponent" variant="ghost" icon="i-lucide-x" size="xs" @click="clearSelection"
+                title="Close Properties" />
+              <UButton variant="ghost" icon="i-lucide-chevron-right" size="xs"
+                @click="rightSidebarCollapsed = !rightSidebarCollapsed" />
+            </div>
+          </div>
+
+          <!-- Property Tabs -->
+          <div class="flex border-b border-gray-200">
+            <button v-for="tab in propertyTabs" :key="tab.id" @click="activePropertyTab = tab.id" :class="[
+              'flex-1 px-3 py-2 text-sm font-medium border-b-2 transition-colors',
+              activePropertyTab === tab.id
+                ? 'border-blue-500 text-blue-600'
+                : 'border-transparent text-gray-500 hover:text-gray-700'
+            ]">
+              {{ tab.label }}
+            </button>
+          </div>
+
+          <div class="flex-1 flex flex-col overflow-hidden">
+            <!-- Properties Content -->
+            <div class="flex-1 overflow-y-auto p-6">
+              <!-- Document Tab -->
+              <div v-if="activePropertyTab === 'document'" class="space-y-6">
+                <div class="space-y-4">
+                  <h3 class="text-sm font-medium text-gray-900">Page Attributes</h3>
+                  <div class="space-y-3">
+                    <div>
+                      <label class="block text-sm font-medium text-gray-700 mb-1">Page Title</label>
+                      <UInput v-model="pageTitle" placeholder="Enter page title" class="w-full" />
+                    </div>
+                    <div>
+                      <label class="block text-sm font-medium text-gray-700 mb-1">Slug</label>
+                      <UInput v-model="pageSlug" placeholder="page-slug" class="w-full" />
+                    </div>
+                    <div>
+                      <label class="block text-sm font-medium text-gray-700 mb-1">Template</label>
+                      <USelect v-model="pageTemplate" :options="templateOptions" placeholder="Select template"
+                        class="w-full" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Block Tab -->
+              <div v-else-if="activePropertyTab === 'block'" class="space-y-6">
+                <!-- Block Info -->
+                <div v-if="selectedComponent" class="space-y-6">
+                  <div class="flex items-start space-x-4">
+                    <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                      <UIcon :name="selectedComponent.icon" class="w-6 h-6 text-blue-600" />
+                    </div>
+                    <div class="flex-1">
+                      <h4 class="text-lg font-semibold text-gray-800">{{ selectedComponent.displayName }}</h4>
+                      <p class="text-sm text-gray-600 mt-1">{{ selectedComponent.description }}</p>
+                    </div>
+                  </div>
+
+                  <!-- Component Options -->
+                  <div class="border-t border-gray-200 pt-6 animate-in slide-in-from-bottom-2 duration-300">
+                    <ComponentOptionsPanel :component="selectedComponent" @update="updateComponent" />
+                  </div>
+                </div>
+
+                <!-- No Selection -->
+                <div v-else class="text-center text-gray-500 py-8">
+                  <UIcon name="i-lucide-mouse-pointer" class="w-8 h-8 mx-auto mb-2 text-gray-300" />
+                  <p class="text-sm">Select a component to edit its properties</p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
-        <div v-if="!rightSidebarCollapsed" class="flex-1 flex flex-col overflow-hidden">
-          <!-- Properties Content -->
-          <div class="flex-1 overflow-y-auto p-6">
-            <!-- Document Tab -->
-            <div v-if="activePropertyTab === 'document'" class="space-y-6">
-              <div class="space-y-4">
-                <h3 class="text-sm font-medium text-gray-900">Page Attributes</h3>
-                <div class="space-y-3">
-                  <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Page Title</label>
-                    <UInput v-model="pageTitle" placeholder="Enter page title" class="w-full" />
-                  </div>
-                  <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Slug</label>
-                    <UInput v-model="pageSlug" placeholder="page-slug" class="w-full" />
-                  </div>
-                  <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Template</label>
-                    <USelect v-model="pageTemplate" :options="templateOptions" placeholder="Select template"
-                      class="w-full" />
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Block Tab -->
-            <div v-else-if="activePropertyTab === 'block'" class="space-y-6">
-              <!-- Block Info -->
-              <div v-if="selectedComponent" class="space-y-6">
-                                 <div class="flex items-start space-x-4">
-                   <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                     <span class="text-blue-600 text-xl font-semibold">{{ selectedComponent.icon }}</span>
-                   </div>
-                   <div class="flex-1">
-                     <h4 class="text-lg font-semibold text-gray-800">{{ selectedComponent.displayName }}</h4>
-                     <p class="text-sm text-gray-600 mt-1">{{ selectedComponent.description }}</p>
-                   </div>
-                 </div>
-
-                <!-- Component Options -->
-                <div class="border-t border-gray-200 pt-6 animate-in slide-in-from-bottom-2 duration-300">
-                  <ComponentOptionsPanel :component="selectedComponent" @update="updateComponent" />
-                </div>
-              </div>
-
-              <!-- No Selection -->
-              <div v-else class="text-center text-gray-500 py-8">
-                <UIcon name="i-lucide-mouse-pointer" class="w-8 h-8 mx-auto mb-2 text-gray-300" />
-                <p class="text-sm">Select a component to edit its properties</p>
-              </div>
-            </div>
+        <!-- Collapsed State -->
+        <div v-else class="flex flex-col items-center py-3">
+          <UButton variant="ghost" icon="i-lucide-chevron-left" size="xs"
+            @click="rightSidebarCollapsed = !rightSidebarCollapsed" class="rotate-0 hover:bg-gray-100" />
+          <div class="mt-4 transform rotate-90 text-xs font-medium text-gray-500 whitespace-nowrap">
+            Properties
           </div>
         </div>
       </div>
@@ -355,18 +394,18 @@ const templateOptions = [
 
 // Block definitions from registry - only use the components we actually implemented
 const textBlocks = computed(() => [
-  { name: 'mini-hero', label: 'Mini Hero', description: 'Rich text content with formatting options.', icon: '¶' },
-  { name: 'paragraph-block', label: 'Paragraph', description: 'Simple paragraph text with basic styling.', icon: '📝' }
+  { name: 'mini-hero', label: 'Mini Hero', description: 'Rich text content with formatting options.', icon: 'i-lucide-newspaper' },
+  { name: 'paragraph-block', label: 'Paragraph', description: 'Simple paragraph text with basic styling.', icon: 'i-lucide-file-text' }
 ])
 
 const mediaBlocks = computed(() => [
-  { name: 'image-block', label: 'Image Block', description: 'Images with various display options.', icon: '🖼' }
+  { name: 'image-block', label: 'Image Block', description: 'Images with various display options.', icon: 'i-lucide-image' }
 ])
 
 const layoutBlocks = computed(() => [
-  { name: 'columns-block', label: 'Columns', description: 'Multi-column layout with customizable columns.', icon: '📊' },
-  { name: 'grid-block', label: 'Grid', description: 'Flexible grid layout with customizable cells.', icon: '🔲' },
-  { name: 'container-block', label: 'Container', description: 'Container with spacing, background, and border options.', icon: '📦' }
+  { name: 'columns-block', label: 'Columns', description: 'Multi-column layout with customizable columns.', icon: 'i-lucide-columns' },
+  { name: 'grid-block', label: 'Grid', description: 'Flexible grid layout with customizable cells.', icon: 'i-lucide-grid-3x3' },
+  { name: 'container-block', label: 'Container', description: 'Container with spacing, background, and border options.', icon: 'i-lucide-box' }
 ])
 
 // Filtered blocks based on search
@@ -442,11 +481,11 @@ const onDragLeave = () => {
 
 const onDrop = (event: DragEvent, index?: number) => {
   event.preventDefault()
-  
+
   // Check if this is a component reorder or new block
   const componentId = event.dataTransfer?.getData('component-id')
   const blockType = event.dataTransfer?.getData('block-type')
-  
+
   if (componentId && index !== undefined) {
     // Component reordering
     const componentIndex = pageComponents.value.findIndex(c => c.id === componentId)
@@ -457,7 +496,7 @@ const onDrop = (event: DragEvent, index?: number) => {
       // Adjust index if we're moving from before the target position
       const adjustedIndex = componentIndex < index ? index - 1 : index
       pageComponents.value.splice(adjustedIndex, 0, movedComponent)
-      
+
       // Clear drag state and select moved component
       dragTarget.value = null
       selectComponent(movedComponent.id)
