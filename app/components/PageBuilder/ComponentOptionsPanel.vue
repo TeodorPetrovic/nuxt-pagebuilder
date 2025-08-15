@@ -1,72 +1,7 @@
-<template>
-  <!-- Component Options -->
-  <div v-if="component.schema && component.schema.length > 0" class="space-y-6">
-    <div v-for="option in component.schema" :key="option.name" class="space-y-2">
-      <label class="block text-sm text-gray-800">
-        {{ option.label }}
-        <span v-if="option.required" class="text-red-500">*</span>
-      </label>
-
-        <!-- Text Input -->
-        <!-- <UInput v-if="option.type === 'text'" v-model="component.data[option.name]" :placeholder="option.description"
-          class="w-full" @update:model-value="updateOption(option.name, $event)" /> -->
-
-        <HeadingOptionField v-if="option.type === 'heading'" :modelValue="getTextValues(option.name)" @update:modelValue="updateTextValues(option.name, $event)" />
-
-        <!-- Button Option Field -->
-        <ButtonOptionField v-else-if="option.type === 'button'" :modelValue="getButtonValues(option.name)" @update:modelValue="updateButtonValues(option.name, $event)" />
-
-        <!-- Spacing Box -->
-        <SpacingBox v-else-if="option.type === 'spacingBox'" :model-value="getSpacingValue(option.name)"
-          @update:model-value="updateSpacingOption(option.name, $event)" />
-
-        <!-- Number Input -->
-        <UInput v-else-if="option.type === 'number'" v-model="component.data[option.name]" type="number"
-          :placeholder="option.description" class="w-full" @update:model-value="updateOption(option.name, $event)" />
-
-        <!-- Boolean Switch -->
-        <USwitch v-else-if="option.type === 'boolean'" v-model="component.data[option.name]" class="w-full"
-          @update:model-value="updateOption(option.name, $event)" />
-
-        <!-- Select Dropdown -->
-        <USelect v-else-if="option.type === 'select' && option.options" v-model="component.data[option.name]"
-          :items="option.options" :placeholder="option.description" class="w-full"
-          @update:model-value="updateOption(option.name, $event)" />
-
-        <!-- Color Picker -->
-        <UInput v-else-if="option.type === 'color'" v-model="component.data[option.name]" type="color" class="w-full"
-          @update:model-value="updateOption(option.name, $event)" />
-
-        <!-- Textarea -->
-        <UTextarea v-else-if="option.type === 'textarea'" v-model="component.data[option.name]"
-          :placeholder="option.description" class="w-full" @update:model-value="updateOption(option.name, $event)" />
-
-        <!-- JSON Editor -->
-        <UTextarea v-else-if="option.type === 'json'" v-model="jsonString" :placeholder="option.description"
-          class="w-full" @update:model-value="updateJsonOption(option.name, $event)" />
-
-        <!-- Default Text Input -->
-        <UInput v-else v-model="component.data[option.name]" :placeholder="option.description" class="w-full"
-          @update:model-value="updateOption(option.name, $event)" />
-
-      <!-- Validation Error -->
-      <p v-if="option.validation?.message" class="text-xs text-red-500">
-        {{ option.validation.message }}
-      </p>
-    </div>
-  </div>
-
-  <!-- No Options Available -->
-  <div v-else class="text-center text-gray-500 py-4">
-    <p class="text-sm">No configurable options for this component</p>
-  </div>
-</template>
-
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { ComponentDefinition } from '~/libs/pagebuilder/types'
 import SpacingBox from './SpacingBox.vue'
-import TextOptionField from './option-fields/HeadingOptionField.vue'
 import HeadingOptionField from './option-fields/HeadingOptionField.vue'
 import ButtonOptionField from './option-fields/ButtonOptionField.vue'
 
@@ -191,3 +126,73 @@ const updateSpacingOption = (name: string, value: any) => {
   updateOption(name, value)
 }
 </script>
+
+<template>
+  <!-- Component Options -->
+  <div v-if="component.schema && component.schema.length > 0" class="space-y-6">
+    <div v-for="option in component.schema" :key="option.name" class="space-y-2">
+      <label class="block text-sm text-gray-800">
+        {{ option.label }}
+        <span v-if="option.required" class="text-red-500">*</span>
+      </label>
+
+      <!-- Text Input -->
+      <UInput v-if="option.type === 'text'" v-model="component.data[option.name]" :placeholder="option.description"
+        class="w-full" @update:model-value="updateOption(option.name, $event)" />
+
+      <!-- Number Input -->
+      <UInput v-else-if="option.type === 'number'" v-model.number="component.data[option.name]" type="number"
+        :placeholder="option.description" class="w-full" @update:model-value="updateOption(option.name, $event)" />
+
+      <!-- Boolean Switch -->
+      <USwitch v-else-if="option.type === 'boolean'" v-model="component.data[option.name]" class="w-full"
+        @update:model-value="updateOption(option.name, $event)" />
+
+      <!-- Select Dropdown -->
+      <USelect v-else-if="option.type === 'select' && option.options" v-model="component.data[option.name]"
+        :options="option.options" :placeholder="option.description" class="w-full"
+        @update:model-value="updateOption(option.name, $event)" />
+
+      <!-- Color Picker -->
+      <UInput v-else-if="option.type === 'color'" v-model="component.data[option.name]" type="color" class="w-full"
+        @update:model-value="updateOption(option.name, $event)" />
+
+      <!-- Image Upload -->
+      <UInput v-else-if="option.type === 'image'" v-model="component.data[option.name]" placeholder="Image URL"
+        class="w-full" @update:model-value="updateOption(option.name, $event)" />
+
+      <!-- Textarea -->
+      <UTextarea v-else-if="option.type === 'textarea'" v-model="component.data[option.name]"
+        :placeholder="option.description" class="w-full" @update:model-value="updateOption(option.name, $event)" />
+
+      <!-- JSON Editor -->
+      <UTextarea v-else-if="option.type === 'json'" v-model="jsonString" :placeholder="option.description"
+        class="w-full font-mono" :rows="6" @update:model-value="updateJsonOption(option.name, $event)" />
+
+      <!-- Custom Heading Option Field -->
+      <HeadingOptionField v-else-if="option.type === 'heading'" :modelValue="getTextValues(option.name)" @update:modelValue="updateTextValues(option.name, $event)" />
+
+      <!-- Button Option Field -->
+      <ButtonOptionField v-else-if="option.type === 'button'" :modelValue="getButtonValues(option.name)" @update:modelValue="updateButtonValues(option.name, $event)" />
+
+      <!-- Spacing Box -->
+      <SpacingBox v-else-if="option.type === 'spacingBox'" :modelValue="getSpacingValue(option.name)"
+        @update:modelValue="updateSpacingOption(option.name, $event)" />
+
+      <!-- Unsupported Type -->
+      <div v-else class="text-red-500 text-sm">
+        Unsupported option type: {{ option.type }}
+      </div>
+
+      <!-- Validation Error -->
+      <p v-if="option.validation?.message" class="text-xs text-red-500">
+        {{ option.validation.message }}
+      </p>
+    </div>
+  </div>
+
+  <!-- No Options Available -->
+  <div v-else class="text-center text-gray-500 py-4">
+    <p class="text-sm">No configurable options for this component</p>
+  </div>
+</template>

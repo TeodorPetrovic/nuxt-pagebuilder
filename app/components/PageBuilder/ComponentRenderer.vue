@@ -1,12 +1,3 @@
-<template>
-  <component 
-    :is="componentComponent" 
-    :data="component.data"
-    :options="component.options"
-    @click="$emit('click')"
-  />
-</template>
-
 <script setup lang="ts">
 import { computed } from 'vue'
 import { componentRegistry } from '~/libs/pagebuilder/registry'
@@ -27,3 +18,12 @@ const componentComponent = computed(() => {
   return definition?.component
 })
 </script>
+
+<template>
+  <component 
+    :is="componentComponent" 
+    :data="component.data"
+    :options="component.options"
+    @click="$emit('click')"
+  />
+</template>

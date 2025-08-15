@@ -1,3 +1,49 @@
+<script setup lang="ts">
+import { computed, ref } from 'vue'
+import type { PageComponent } from '../../libs/pagebuilder/types'
+import ComponentRenderer from './ComponentRenderer.vue'
+
+interface Props {
+  components: PageComponent[]
+  isEditing: boolean
+}
+
+interface Emits {
+  (e: 'component-click', componentId: string): void
+  (e: 'component-update', componentId: string, updates: Partial<PageComponent>): void
+}
+
+const props = defineProps<Props>()
+const emit = defineEmits<Emits>()
+
+const selectedComponentId = ref<string | null>(null)
+
+const isSelected = (componentId: string) => componentId === selectedComponentId.value
+
+const getComponentStyle = (component: PageComponent) => ({
+  position: 'absolute' as const,
+  left: `${component.position.x}px`,
+  top: `${component.position.y}px`,
+  width: `${component.size.width}px`,
+  height: `${component.size.height}px`,
+  cursor: props.isEditing ? 'move' : 'default'
+})
+
+const selectComponent = (componentId: string) => {
+  selectedComponentId.value = componentId
+  emit('component-click', componentId)
+}
+
+const handleComponentUpdate = (componentId: string, updates: Partial<PageComponent>) => {
+  emit('component-update', componentId, updates)
+}
+
+const startResize = (event: MouseEvent, componentId: string, handle: string) => {
+  // TODO: Implement resize functionality
+  console.log('Start resize:', componentId, handle)
+}
+</script>
+
 <template>
   <div class="relative w-full h-full">
     <div class="relative w-full h-full">
@@ -26,49 +72,3 @@
     </div>
   </div>
 </template>
-
-<script setup lang="ts">
-import { computed, ref } from 'vue'
-import type { PageComponent } from '../../libs/pagebuilder/types'
-import ComponentRenderer from './ComponentRenderer.vue'
-
-interface Props {
-  components: PageComponent[]
-  isEditing: boolean
-}
-
-interface Emits {
-  (e: 'component-click', componentId: string): void
-  (e: 'component-update', componentId: string, updates: Partial<PageComponent>): void
-}
-
-const props = defineProps<Props>()
-const emit = defineEmits<Emits>()
-
-const selectedComponentId = ref<string | null>(null)
-
-const isSelected = (componentId: string) => componentId === selectedComponentId.value
-
-const getComponentStyle = (component: PageComponent) => ({
-  position: 'absolute',
-  left: `${component.position.x}px`,
-  top: `${component.position.y}px`,
-  width: `${component.size.width}px`,
-  height: `${component.size.height}px`,
-  cursor: props.isEditing ? 'move' : 'default'
-})
-
-const selectComponent = (componentId: string) => {
-  selectedComponentId.value = componentId
-  emit('component-click', componentId)
-}
-
-const handleComponentUpdate = (componentId: string, updates: Partial<PageComponent>) => {
-  emit('component-update', componentId, updates)
-}
-
-const startResize = (event: MouseEvent, componentId: string, handle: string) => {
-  // TODO: Implement resize functionality
-  console.log('Start resize:', componentId, handle)
-}
-</script>

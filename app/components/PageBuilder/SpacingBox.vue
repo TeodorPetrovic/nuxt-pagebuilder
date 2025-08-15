@@ -1,3 +1,74 @@
+<script setup lang="ts">
+
+interface Props {
+  modelValue: {
+    paddingTop: number
+    paddingRight: number
+    paddingBottom: number
+    paddingLeft: number
+    marginTop: number
+    marginRight: number
+    marginBottom: number
+    marginLeft: number
+  }
+}
+
+interface Emits {
+  (e: 'update:modelValue', value: Props['modelValue']): void
+}
+
+const props = defineProps<Props>()
+const emit = defineEmits<Emits>()
+
+// Local state for inputs
+const paddingTop = ref(props.modelValue.paddingTop)
+const paddingRight = ref(props.modelValue.paddingRight)
+const paddingBottom = ref(props.modelValue.paddingBottom)
+const paddingLeft = ref(props.modelValue.paddingLeft)
+const marginTop = ref(props.modelValue.marginTop)
+const marginRight = ref(props.modelValue.marginRight)
+const marginBottom = ref(props.modelValue.marginBottom)
+const marginLeft = ref(props.modelValue.marginLeft)
+
+// Watch for external changes
+watch(() => props.modelValue, (newValue) => {
+  paddingTop.value = newValue.paddingTop
+  paddingRight.value = newValue.paddingRight
+  paddingBottom.value = newValue.paddingBottom
+  paddingLeft.value = newValue.paddingLeft
+  marginTop.value = newValue.marginTop
+  marginRight.value = newValue.marginRight
+  marginBottom.value = newValue.marginBottom
+  marginLeft.value = newValue.marginLeft
+}, { deep: true })
+
+function updatePadding() {
+  emit('update:modelValue', {
+    paddingTop: paddingTop.value,
+    paddingRight: paddingRight.value,
+    paddingBottom: paddingBottom.value,
+    paddingLeft: paddingLeft.value,
+    marginTop: marginTop.value,
+    marginRight: marginRight.value,
+    marginBottom: marginBottom.value,
+    marginLeft: marginLeft.value
+  })
+}
+
+function updateMargin() {
+  emit('update:modelValue', {
+    paddingTop: paddingTop.value,
+    paddingRight: paddingRight.value,
+    paddingBottom: paddingBottom.value,
+    paddingLeft: paddingLeft.value,
+    marginTop: marginTop.value,
+    marginRight: marginRight.value,
+    marginBottom: marginBottom.value,
+    marginLeft: marginLeft.value
+  })
+}
+</script>
+
 <template>
   <div class="spacing-box">
     <div class="box-model">
@@ -100,77 +171,6 @@
     </div>
   </div>
 </template>
-
-<script setup lang="ts">
-
-interface Props {
-  modelValue: {
-    paddingTop: number
-    paddingRight: number
-    paddingBottom: number
-    paddingLeft: number
-    marginTop: number
-    marginRight: number
-    marginBottom: number
-    marginLeft: number
-  }
-}
-
-interface Emits {
-  (e: 'update:modelValue', value: Props['modelValue']): void
-}
-
-const props = defineProps<Props>()
-const emit = defineEmits<Emits>()
-
-// Local state for inputs
-const paddingTop = ref(props.modelValue.paddingTop)
-const paddingRight = ref(props.modelValue.paddingRight)
-const paddingBottom = ref(props.modelValue.paddingBottom)
-const paddingLeft = ref(props.modelValue.paddingLeft)
-const marginTop = ref(props.modelValue.marginTop)
-const marginRight = ref(props.modelValue.marginRight)
-const marginBottom = ref(props.modelValue.marginBottom)
-const marginLeft = ref(props.modelValue.marginLeft)
-
-// Watch for external changes
-watch(() => props.modelValue, (newValue) => {
-  paddingTop.value = newValue.paddingTop
-  paddingRight.value = newValue.paddingRight
-  paddingBottom.value = newValue.paddingBottom
-  paddingLeft.value = newValue.paddingLeft
-  marginTop.value = newValue.marginTop
-  marginRight.value = newValue.marginRight
-  marginBottom.value = newValue.marginBottom
-  marginLeft.value = newValue.marginLeft
-}, { deep: true })
-
-function updatePadding() {
-  emit('update:modelValue', {
-    paddingTop: paddingTop.value,
-    paddingRight: paddingRight.value,
-    paddingBottom: paddingBottom.value,
-    paddingLeft: paddingLeft.value,
-    marginTop: marginTop.value,
-    marginRight: marginRight.value,
-    marginBottom: marginBottom.value,
-    marginLeft: marginLeft.value
-  })
-}
-
-function updateMargin() {
-  emit('update:modelValue', {
-    paddingTop: paddingTop.value,
-    paddingRight: paddingRight.value,
-    paddingBottom: paddingBottom.value,
-    paddingLeft: paddingLeft.value,
-    marginTop: marginTop.value,
-    marginRight: marginRight.value,
-    marginBottom: marginBottom.value,
-    marginLeft: marginLeft.value
-  })
-}
-</script>
 
 <style scoped>
 .spacing-box {

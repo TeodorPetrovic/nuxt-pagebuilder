@@ -1,30 +1,3 @@
-<template>
-  <div class="image-block" :class="alignmentClass">
-    <div v-if="data.imageUrl" class="image-container">
-      <img 
-        :src="data.imageUrl" 
-        :alt="data.altText || 'Image'"
-        :class="`rounded-${data.borderRadius || 'lg'} shadow-${data.shadow || 'md'}`"
-        :style="imageStyles"
-      />
-      
-      <div v-if="data.caption" class="image-caption mt-2 text-center">
-        <p class="text-sm text-gray-600">{{ data.caption }}</p>
-      </div>
-    </div>
-    
-    <div v-else class="image-placeholder">
-      <div class="placeholder-container" :style="placeholderStyles">
-        <div class="text-center text-gray-500">
-          <UIcon name="i-lucide-image" class="w-12 h-12 mx-auto mb-2" />
-          <p class="text-sm">No image selected</p>
-          <p class="text-xs text-gray-400 mt-1">{{ data.width || 400 }} × {{ data.height || 300 }}px</p>
-        </div>
-      </div>
-    </div>
-  </div>
-</template>
-
 <script setup lang="ts">
 import { computed } from 'vue'
 
@@ -69,6 +42,33 @@ const placeholderStyles = computed(() => ({
   maxWidth: '100%'
 }))
 </script>
+
+<template>
+  <div class="image-block" :class="alignmentClass">
+    <div v-if="data.imageUrl" class="image-container">
+      <img 
+        :src="data.imageUrl" 
+        :alt="data.altText || 'Image'"
+        :class="`rounded-${data.borderRadius || 'lg'} shadow-${data.shadow || 'md'}`"
+        :style="imageStyles"
+      />
+      
+      <div v-if="data.caption" class="image-caption mt-2 text-center">
+        <p class="text-sm text-gray-600">{{ data.caption }}</p>
+      </div>
+    </div>
+    
+    <div v-else class="image-placeholder">
+      <div class="placeholder-container" :style="placeholderStyles">
+        <div class="text-center text-gray-500">
+          <UIcon name="i-lucide-image" class="w-12 h-12 mx-auto mb-2" />
+          <p class="text-sm">No image selected</p>
+          <p class="text-xs text-gray-400 mt-1">{{ data.width || 400 }} × {{ data.height || 300 }}px</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
 
 <style scoped>
 .image-block {

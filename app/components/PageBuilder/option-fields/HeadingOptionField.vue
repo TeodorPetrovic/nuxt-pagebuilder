@@ -1,3 +1,28 @@
+<script lang="ts" setup>
+
+interface TextProps {
+  value: string
+  size: number
+  color: string
+  bold: boolean
+  italic: boolean
+  underline: boolean
+}
+
+const props = defineProps<{
+  modelValue: TextProps
+}>()
+
+const emits = defineEmits<{
+  (e: 'update:modelValue', value: TextProps): void
+}>()
+
+const bold = ref(props.modelValue.bold)
+const italic = ref(props.modelValue.italic)
+const underline = ref(props.modelValue.underline)
+
+</script>
+
 <template>
   <div>
     <UInput class="w-full" v-model="props.modelValue.value" />
@@ -27,28 +52,3 @@
     </div>
   </div>
 </template>
-
-<script lang="ts" setup>
-
-interface TextProps {
-  value: string
-  size: number
-  color: string
-  bold: boolean
-  italic: boolean
-  underline: boolean
-}
-
-const props = defineProps<{
-  modelValue: TextProps
-}>()
-
-const emits = defineEmits<{
-  (e: 'update:modelValue', value: TextProps): void
-}>()
-
-const bold = ref(props.modelValue.bold)
-const italic = ref(props.modelValue.italic)
-const underline = ref(props.modelValue.underline)
-
-</script>

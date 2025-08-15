@@ -1,13 +1,3 @@
-<template>
-  <div class="w-full" :class="alignmentClass">
-    <p 
-      :class="`text-${data.textSize || 'base'} text-${data.textColor || 'gray-700'} leading-${data.lineHeight || 'relaxed'}`"
-    >
-      {{ data.content || 'Enter your paragraph text here...' }}
-    </p>
-  </div>
-</template>
-
 <script setup lang="ts">
 import { computed } from 'vue'
 
@@ -40,4 +30,12 @@ const alignmentClass = computed(() => {
 })
 </script>
 
-
+<template>
+  <div class="w-full" :class="alignmentClass">
+    <p 
+      :class="`text-${data.textSize || 'base'} text-${data.textColor || 'gray-700'} leading-${data.lineHeight || 'relaxed'}`"
+    >
+      {{ data.content || 'Enter your paragraph text here...' }}
+    </p>
+  </div>
+</template>

@@ -46,7 +46,9 @@ const textBlockDefinition = createComponentDefinition({
       color: 'primary',
       variant: 'solid',
       size: 'md',
-      alignment: 'left'
+      alignment: 'left',
+      newTab: false,
+      url: ''
     },
     
     // Spacing group
