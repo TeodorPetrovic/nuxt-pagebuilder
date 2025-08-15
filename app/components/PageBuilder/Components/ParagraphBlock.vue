@@ -3,39 +3,38 @@ import { computed } from 'vue'
 
 interface Props {
   data: {
-    content?: string
-    textSize?: 'xs' | 'sm' | 'base' | 'lg' | 'xl' | '2xl'
-    textColor?: string
-    lineHeight?: 'tight' | 'snug' | 'normal' | 'relaxed' | 'loose'
-    alignment?: 'left' | 'center' | 'right' | 'justify'
+    content: {
+      value?: string,
+      size?: number
+      color?: string
+      bold?: boolean
+      italic?: boolean
+      underline?: boolean
+    }
   }
 }
 
 const props = defineProps<Props>()
 
-const alignmentClass = computed(() => {
-  const alignment = props.data.alignment || 'left'
-  switch (alignment) {
-    case 'left':
-      return 'text-left'
-    case 'center':
-      return 'text-center'
-    case 'right':
-      return 'text-right'
-    case 'justify':
-      return 'text-justify'
-    default:
-      return 'text-left'
+const textStyles = computed(() => {
+  const styles: Record<string, string> = {
+    fontSize: `${props.data.content.size || 16}px`,
+    color: props.data.content.color || '#4b5563',
+    lineHeight: '1.6',
+    margin: '0'
   }
+  if (props.data.content.bold) styles.fontWeight = 'bold'
+  if (props.data.content.italic) styles.fontStyle = 'italic'
+  
+  return styles
 })
+
 </script>
 
 <template>
-  <div class="w-full" :class="alignmentClass">
-    <p 
-      :class="`text-${data.textSize || 'base'} text-${data.textColor || 'gray-700'} leading-${data.lineHeight || 'relaxed'}`"
-    >
-      {{ data.content || 'Enter your paragraph text here...' }}
+  <div class="w-full">
+    <p :class="textStyles">
+      {{ data.content.value}}
     </p>
   </div>
 </template>

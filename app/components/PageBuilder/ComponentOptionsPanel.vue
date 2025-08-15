@@ -4,6 +4,8 @@ import type { ComponentDefinition } from '~/libs/pagebuilder/types'
 import SpacingBox from './SpacingBox.vue'
 import HeadingOptionField from './option-fields/HeadingOptionField.vue'
 import ButtonOptionField from './option-fields/ButtonOptionField.vue'
+import SimpleTextContentOptionFieldCopy from './option-fields/SimpleTextContentOptionField copy.vue'
+import ImageOptionField from './option-fields/ImageOptionField.vue'
 
 interface Props {
   component: ComponentDefinition & {
@@ -61,12 +63,12 @@ const updateJsonOption = (name: string, value: string) => {
   }
 }
 
-const getTextValues = (name: string) => {
+const getOptionValues = (name: string) => {
   const text = props.component.data[name]
   return text
 }
 
-const updateTextValues = (name: string, value: any) => {
+const updateOptionValues = (name: string, value: any) => {
   updateOption(name, value)
 }
 
@@ -137,9 +139,11 @@ const updateSpacingOption = (name: string, value: any) => {
         <template #content>
           <div class="mt-1 p-2 border border-gray-200 rounded-lg bg-gray-50">
             <!-- Text Input -->
-            <UInput v-if="option.type === 'text'" v-model="component.data[option.name]"
+            <!-- <UInput v-if="option.type === 'text'" v-model="component.data[option.name]"
               :placeholder="option.description" class="w-full"
-              @update:model-value="updateOption(option.name, $event)" />
+              @update:model-value="updateOption(option.name, $event)" /> -->
+            <SimpleTextContentOptionFieldCopy v-if="option.type === 'text'" :modelValue="getOptionValues(option.name)"
+              @update:modelValue="updateOptionValues(option.name, $event)" />
 
             <!-- Number Input -->
             <UInput v-else-if="option.type === 'number'" v-model.number="component.data[option.name]" type="number"
@@ -160,8 +164,8 @@ const updateSpacingOption = (name: string, value: any) => {
               class="w-full" @update:model-value="updateOption(option.name, $event)" />
 
             <!-- Image Upload -->
-            <UInput v-else-if="option.type === 'image'" v-model="component.data[option.name]" placeholder="Image URL"
-              class="w-full" @update:model-value="updateOption(option.name, $event)" />
+            <ImageOptionField v-else-if="option.type === 'image'" :modelValue="getOptionValues(option.name)"
+              @update:modelValue="updateOptionValues(option.name, $event)" />
 
             <!-- Textarea -->
             <UTextarea v-else-if="option.type === 'textarea'" v-model="component.data[option.name]"
@@ -173,8 +177,8 @@ const updateSpacingOption = (name: string, value: any) => {
               class="w-full font-mono" :rows="6" @update:model-value="updateJsonOption(option.name, $event)" />
 
             <!-- Custom Heading Option Field -->
-            <HeadingOptionField v-else-if="option.type === 'heading'" :modelValue="getTextValues(option.name)"
-              @update:modelValue="updateTextValues(option.name, $event)" />
+            <HeadingOptionField v-else-if="option.type === 'heading'" :modelValue="getOptionValues(option.name)"
+              @update:modelValue="updateOptionValues(option.name, $event)" />
 
             <!-- Button Option Field -->
             <ButtonOptionField v-else-if="option.type === 'button'" :modelValue="getButtonValues(option.name)"

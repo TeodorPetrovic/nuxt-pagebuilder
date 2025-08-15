@@ -1,6 +1,6 @@
 import { componentRegistry } from './registry'
 import { createComponentDefinition, optionTypes } from './componentBuilder'
-import { groupedMiniHereBlockOptions } from './optionGroups'
+import { groupedMiniHereBlockOptions, simpleTextContentOption } from './optionGroups'
 import MiniHero from '~/components/PageBuilder/Components/MiniHero.vue'
 import ImageBlock from '~/components/PageBuilder/Components/ImageBlock.vue'
 import ParagraphBlock from '~/components/PageBuilder/Components/ParagraphBlock.vue'
@@ -37,7 +37,8 @@ const textBlockDefinition = createComponentDefinition({
       size: 16,
       color: '#4b5563',
       bold: false,
-      italic: false
+      italic: false,
+      underline: false
     },
     
     // Button group
@@ -74,36 +75,17 @@ const paragraphBlockDefinition = createComponentDefinition({
   description: 'Simple paragraph text with basic styling',
   component: ParagraphBlock,
   schema: [
-    optionTypes.textarea('content', 'Content', { description: 'Enter your paragraph text' }),
-    optionTypes.select('textSize', 'Text Size', [
-      { label: 'Extra Small', value: 'xs' },
-      { label: 'Small', value: 'sm' },
-      { label: 'Base', value: 'base' },
-      { label: 'Large', value: 'lg' },
-      { label: 'Extra Large', value: 'xl' },
-      { label: '2XL', value: '2xl' }
-    ]),
-    optionTypes.color('textColor', 'Text Color'),
-    optionTypes.select('lineHeight', 'Line Height', [
-      { label: 'Tight', value: 'tight' },
-      { label: 'Snug', value: 'snug' },
-      { label: 'Normal', value: 'normal' },
-      { label: 'Relaxed', value: 'relaxed' },
-      { label: 'Loose', value: 'loose' }
-    ]),
-    optionTypes.select('alignment', 'Alignment', [
-      { label: 'Left', value: 'left' },
-      { label: 'Center', value: 'center' },
-      { label: 'Right', value: 'right' },
-      { label: 'Justify', value: 'justify' }
-    ])
+    simpleTextContentOption('content', 'Content', 'Enter your paragraph text'),
   ],
   defaultData: {
-    content: 'This is a simple paragraph block. You can add any text content here and customize the styling to match your design.',
-    textSize: 'base',
-    textColor: 'gray-700',
-    lineHeight: 'relaxed',
-    alignment: 'left'
+    content: {
+      value: 'This is a sample text block. You can customize the content, styling, and layout to match your design needs.',
+      size: 16,
+      color: '#4b5563',
+      bold: false,
+      italic: false,
+      underline: false
+    },
   }
 })
 
@@ -116,44 +98,19 @@ const imageBlockDefinition = createComponentDefinition({
   description: 'Images with various display options',
   component: ImageBlock,
   schema: [
-    optionTypes.text('imageUrl', 'Image URL', { description: 'Enter the URL of the image' }),
-    optionTypes.text('altText', 'Alt Text', { description: 'Alternative text for accessibility' }),
-    optionTypes.text('caption', 'Caption', { description: 'Optional caption below the image' }),
-    optionTypes.number('width', 'Width', { description: 'Image width in pixels' }),
-    optionTypes.number('height', 'Height', { description: 'Image height in pixels' }),
-    optionTypes.select('borderRadius', 'Border Radius', [
-      { label: 'None', value: 'none' },
-      { label: 'Small', value: 'sm' },
-      { label: 'Medium', value: 'md' },
-      { label: 'Large', value: 'lg' },
-      { label: 'Extra Large', value: 'xl' },
-      { label: 'Full', value: 'full' }
-    ]),
-    optionTypes.select('shadow', 'Shadow', [
-      { label: 'None', value: 'none' },
-      { label: 'Small', value: 'sm' },
-      { label: 'Medium', value: 'md' },
-      { label: 'Large', value: 'lg' },
-      { label: 'Extra Large', value: 'xl' },
-      { label: '2XL', value: '2xl' }
-    ]),
-    optionTypes.select('alignment', 'Alignment', [
-      { label: 'Left', value: 'left' },
-      { label: 'Center', value: 'center' },
-      { label: 'Right', value: 'right' }
-    ]),
-    optionTypes.text('linkUrl', 'Link URL', { description: 'Optional URL to link the image to' })
+    optionTypes.image('image', 'Image', { description: 'Enter the URL of the image' })
   ],
   defaultData: {
-    imageUrl: '',
-    altText: 'Image',
-    caption: '',
-    width: 400,
-    height: 300,
-    borderRadius: 'lg',
-    shadow: 'md',
-    alignment: 'center',
-    linkUrl: ''
+    image: {
+      url: '',
+      alt: 'Image',
+      caption: 'Image',
+      width: 400,
+      height: 300,
+      borderRadius: 'lg',
+      shadow: 'md',
+      alignment: 'center',
+    },
   }
 })
 

@@ -31,82 +31,31 @@ export function createComponentDefinition(config: {
   }
 }
 
-// Predefined option types for common use cases
+const createOptionType = (type: ComponentOption['type']) => 
+  (name: string, label: string, config: Partial<ComponentOption> = {}): ComponentOption => ({
+    name,
+    label,
+    type,
+    ...config
+  })
+
 export const optionTypes = {
-  heading: (name: string, label: string, config: Partial<ComponentOption> = {}): ComponentOption => ({
-    name,
-    label,
-    type: 'heading',
-    ...config
-  }),
-  text: (name: string, label: string, config: Partial<ComponentOption> = {}): ComponentOption => ({
-    name,
-    label,
-    type: 'text',
-    ...config
-  }),
-  
-  number: (name: string, label: string, config: Partial<ComponentOption> = {}): ComponentOption => ({
-    name,
-    label,
-    type: 'number',
-    ...config
-  }),
-  
-  boolean: (name: string, label: string, config: Partial<ComponentOption> = {}): ComponentOption => ({
-    name,
-    label,
-    type: 'boolean',
-    ...config
-  }),
+  heading: createOptionType('heading'),
+  text: createOptionType('text'),
+  number: createOptionType('number'),
+  boolean: createOptionType('boolean'),
+  color: createOptionType('color'),
+  image: createOptionType('image'),
+  textarea: createOptionType('textarea'),
+  json: createOptionType('json'),
+  spacingBox: createOptionType('spacingBox'),
+  button: createOptionType('button'),
   
   select: (name: string, label: string, options: { label: string; value: any }[], config: Partial<ComponentOption> = {}): ComponentOption => ({
     name,
     label,
     type: 'select',
     options,
-    ...config
-  }),
-  
-  color: (name: string, label: string, config: Partial<ComponentOption> = {}): ComponentOption => ({
-    name,
-    label,
-    type: 'color',
-    ...config
-  }),
-  
-  image: (name: string, label: string, config: Partial<ComponentOption> = {}): ComponentOption => ({
-    name,
-    label,
-    type: 'image',
-    ...config
-  }),
-  
-  textarea: (name: string, label: string, config: Partial<ComponentOption> = {}): ComponentOption => ({
-    name,
-    label,
-    type: 'textarea',
-    ...config
-  }),
-  
-  json: (name: string, label: string, config: Partial<ComponentOption> = {}): ComponentOption => ({
-    name,
-    label,
-    type: 'json',
-    ...config
-  }),
-  
-  spacingBox: (name: string, label: string, config: Partial<ComponentOption> = {}): ComponentOption => ({
-    name,
-    label,
-    type: 'spacingBox',
-    ...config
-  }),
-
-  button: (name: string, label: string, config: Partial<ComponentOption> = {}): ComponentOption => ({
-    name,
-    label,
-    type: 'button',
     ...config
   })
 }

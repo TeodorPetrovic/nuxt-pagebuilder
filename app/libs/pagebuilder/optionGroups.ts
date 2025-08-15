@@ -34,6 +34,13 @@ export function simpleHeadingOption(name: string, label: string, placeholder: st
   })
 }
 
+export function simpleTextContentOption(name: string, label: string, placeholder: string = ''): ComponentOption {
+  return optionTypes.text(name, label, {
+    description: `Enter ${label.toLowerCase()}`,
+    defaultValue: placeholder
+  })
+}
+
 export function simpleButtonOption(name: string, label: string, placeholder: string = ''): ComponentOption {
   return optionTypes.button(name, label, {
     description: `Configure ${label.toLowerCase()}`,
@@ -147,7 +154,7 @@ export function groupedMiniHereBlockOptions(): ComponentOption[] {
     // === BASIC CONTENT ===
     simpleHeadingOption('heading', 'Heading', 'Enter heading'),
     alignmentOption('alignment', 'Content Alignment'),
-    // simpleTextareaOption('content', 'Text Content', 'Enter your text content'),
+    simpleTextContentOption('content', 'Text Content', 'Enter your text content'),
     
     // === BUTTON ===
     simpleButtonOption('button', 'Button', 'Configure button'),

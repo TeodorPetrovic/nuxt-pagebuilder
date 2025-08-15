@@ -22,6 +22,7 @@ interface Props {
       color?: string
       bold?: boolean
       italic?: boolean
+      underline?: boolean
     }
     
     // Button group

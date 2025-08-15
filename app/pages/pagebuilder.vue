@@ -278,7 +278,7 @@
 
           <div class="flex-1 flex flex-col overflow-hidden min-h-0">
             <!-- Properties Content -->
-            <div class="flex-1 overflow-y-auto p-6 min-h-0 max-h-full">
+            <div class="flex-1 overflow-y-auto px-5 py-3 min-h-0 max-h-full">
               <!-- Document Tab -->
               <div v-if="activePropertyTab === 'document'" class="space-y-4">
                 <h3 class="text-sm font-medium text-gray-900">Page Attributes</h3>
@@ -312,11 +312,7 @@
                       <p class="text-sm text-gray-600 mt-1">{{ selectedComponent.description }}</p>
                     </div>
                   </div>
-
-                  <!-- Component Options -->
-                  <div class="border-t border-gray-200 pt-6">
                     <ComponentOptionsPanel :component="selectedComponent" @update="updateComponent" />
-                  </div>
                 </div>
 
                 <!-- No Selection -->
