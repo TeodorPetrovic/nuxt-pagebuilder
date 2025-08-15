@@ -1,29 +1,3 @@
-<template>
-  <div class="text-block" :class="alignmentClass" :style="containerStyles">
-    <div v-if="data.heading?.value" class="text-block-heading mb-3">
-      <h2 :style="headingStyles">
-        {{ data.heading.value }}
-      </h2>
-    </div>
-    
-    <div v-if="data.content.value" class="text-block-content">
-      <p :style="textStyles">
-        {{ data.content.value }}
-      </p>
-    </div>
-    
-    <div v-if="data.button?.value" class="text-block-button mt-4" :class="buttonAlignmentClass">
-      <UButton 
-        :color="data.button.color"
-        :variant="data.button.variant || 'solid'"
-        :size="data.button.size || 'md'"
-      >
-        {{ data.button.value }}
-      </UButton>
-    </div>
-  </div>
-</template>
-
 <script setup lang="ts">
 
 interface Props {
@@ -57,6 +31,8 @@ interface Props {
       variant?: 'solid' | 'outline' | 'ghost'
       size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl'
       alignment?: 'left' | 'center' | 'right'
+      newTab?: boolean
+      url?: string
     }
     
     // Spacing group
@@ -101,14 +77,8 @@ const headingStyles = computed(() => {
     margin: '0',
     lineHeight: '1.2'
   }
-  
-  // Font weight
   if (props.data.heading?.bold) styles.fontWeight = 'bold'
-  
-  // Font style
   if (props.data.heading?.italic) styles.fontStyle = 'italic'
-  
-  // Text decoration
   let textDecoration = 'none'
   if (props.data.heading?.underline) textDecoration = 'underline'
   if (textDecoration !== 'none') styles.textDecoration = textDecoration
@@ -124,26 +94,62 @@ const textStyles = computed(() => {
     lineHeight: '1.6',
     margin: '0'
   }
-  
-  // Font weight
   if (props.data.content.bold) styles.fontWeight = 'bold'
-  
-  // Font style
   if (props.data.content.italic) styles.fontStyle = 'italic'
   
   return styles
 })
 
-const getButtonColor = (color?: string) => {
-  if (color === 'primary') return 'primary'
-  if (color === 'secondary') return 'secondary'
-  if (color === 'success') return 'success'
-  if (color === 'error') return 'error'
-  if (color === 'warning') return 'warning'
-  if (color === 'info') return 'info'
-  if (color === 'neutral') return 'neutral'
-  return 'primary' // Default color
+// URL validation helper
+const isValidUrl = (url?: string) => {
+  if (!url) return false
+  try {
+    new URL(url)
+    return true
+  } catch {
+    return false
+  }
 }
+
 </script>
 
-
+<template>
+  <div class="text-block" :class="alignmentClass" :style="containerStyles">
+    <div v-if="data.heading?.value" class="text-block-heading mb-3">
+      <h2 :style="headingStyles">
+        {{ data.heading.value }}
+      </h2>
+    </div>
+    
+    <div v-if="data.content.value" class="text-block-content">
+      <p :style="textStyles">
+        {{ data.content.value }}
+      </p>
+    </div>
+    
+    <div v-if="data.button?.value" class="text-block-button mt-4" :class="buttonAlignmentClass">
+      <!-- Link Button (valid URL only) -->
+      <UButton
+        v-if="isValidUrl(data.button.url)"
+        :to="data.button.url"
+        :target="data.button.newTab ? '_blank' : '_self'"
+        :external="data.button.newTab"
+        :color="data.button.color"
+        :variant="data.button.variant || 'solid'"
+        :size="data.button.size || 'md'"
+      >
+        {{ data.button.value }}
+      </UButton>
+      
+      <!-- Regular Button (invalid/empty URL) -->
+      <UButton
+        v-else
+        :color="data.button.color"
+        :variant="data.button.variant || 'solid'"
+        :size="data.button.size || 'md'"
+      >
+        {{ data.button.value }}
+      </UButton>
+    </div>
+  </div>
+</template>

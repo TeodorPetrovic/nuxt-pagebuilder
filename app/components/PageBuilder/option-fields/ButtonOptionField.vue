@@ -61,7 +61,7 @@ const updateAlignment = (value: string) => {
 </script>
 
 <template>
-    <div class="space-y-3 p-2 border border-gray-200 rounded-lg bg-gray-50">
+    <div class="space-y-3">
         <!-- Button Text -->
         <div>
             <UInput v-model="props.modelValue.value" placeholder="Enter button text" class="w-full" />
@@ -95,10 +95,12 @@ const updateAlignment = (value: string) => {
                 </UButtonGroup>
             </div>
         </div>
-        <div class="flex items-center gap-2">
-            <UCheckbox v-model="props.modelValue.newTab" label="New Tab"/>
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">URL</label>
             <UInput v-model="props.modelValue.url" placeholder="Enter URL" />
         </div>
-
+        <div>
+            <UCheckbox v-model="props.modelValue.newTab" label="New Tab"/>
+        </div>
     </div>
 </template>
