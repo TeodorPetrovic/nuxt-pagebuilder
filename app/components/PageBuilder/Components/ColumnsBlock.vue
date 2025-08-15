@@ -91,10 +91,10 @@ const onComponentRemove = (columnIndex: number, componentId: string) => {
         <!-- Column with Components -->
         <div v-else class="min-h-[200px] space-y-2">
           <div v-for="component in column.components" :key="component.id" class="relative group">
-            <div class="border border-transparent rounded-lg hover:border-blue-300 transition-colors">
+            <div class="border border-transparent rounded-lg hover:border-blue-300 transition-colors"
+                 @click.stop="onComponentClick(component.id)">
               <ComponentRenderer 
                 :component="component"
-                @click="onComponentClick(component.id)"
               />
             </div>
             

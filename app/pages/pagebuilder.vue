@@ -206,7 +206,7 @@
                   <div
                     class="border-2 border-transparent hover:border-blue-300 rounded-lg p-4 transition-colors cursor-move"
                     :class="{ 'border-blue-500': selectedComponentId === component.id }" draggable="true"
-                    @dragstart="onComponentDragStart($event, component, index)" @click="selectComponent(component.id)">
+                    @dragstart="onComponentDragStart($event, component, index)" @click.self="selectComponent(component.id)">
                     <ComponentRenderer 
                       :component="component" 
                       @component-add="onNestedComponentAdd"
@@ -348,6 +348,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { componentRegistry } from '~/libs/pagebuilder/registry'
 import type { ComponentDefinition, ComponentInstance } from '~/libs/pagebuilder/types'
+import { deepClone } from '~/libs/pagebuilder/utils'
 import ComponentRenderer from '~/components/PageBuilder/ComponentRenderer.vue'
 import ComponentOptionsPanel from '~/components/PageBuilder/ComponentOptionsPanel.vue'
 
@@ -430,11 +431,33 @@ const filteredLayoutBlocks = computed(() =>
   )
 )
 
+// Helper function to find any component by ID (including nested ones)
+const findComponentById = (id: string): ComponentInstance | null => {
+  // First check top-level components
+  const topLevelComponent = pageComponents.value.find(c => c.id === id)
+  if (topLevelComponent) return topLevelComponent
+
+  // Then check nested components in layout components
+  for (const component of pageComponents.value) {
+    if (component.type === 'columns-block' && component.data.columnsData) {
+      for (const column of component.data.columnsData) {
+        if (column.components) {
+          const nestedComponent = column.components.find((c: ComponentInstance) => c.id === id)
+          if (nestedComponent) return nestedComponent
+        }
+      }
+    }
+    // Add other layout types here when needed (grid-block, container-block, etc.)
+  }
+
+  return null
+}
+
 // Selected component
 const selectedComponent = computed(() => {
   if (!selectedComponentId.value) return null
 
-  const component = pageComponents.value.find(c => c.id === selectedComponentId.value)
+  const component = findComponentById(selectedComponentId.value)
   if (!component) return null
 
   const definition = componentRegistryInstance.get(component.type)
@@ -509,7 +532,7 @@ const onDrop = (event: DragEvent, index?: number) => {
     const newComponent: ComponentInstance = {
       id: `component-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       type: blockType,
-      data: { ...definition.defaultData },
+      data: deepClone(definition.defaultData),
       position: { x: 0, y: 0 },
       size: { width: 100, height: 100 }
     }
@@ -544,11 +567,14 @@ const removeComponent = (index: number) => {
 }
 
 const updateComponent = (updates: Partial<ComponentInstance>) => {
-  const index = pageComponents.value.findIndex(c => c.id === selectedComponentId.value)
-  if (index !== -1 && selectedComponentId.value) {
-    const currentComponent = pageComponents.value[index]
+  if (!selectedComponentId.value) return
+
+  // First try to find and update in top-level components
+  const topLevelIndex = pageComponents.value.findIndex(c => c.id === selectedComponentId.value)
+  if (topLevelIndex !== -1) {
+    const currentComponent = pageComponents.value[topLevelIndex]
     if (currentComponent) {
-      pageComponents.value[index] = {
+      pageComponents.value[topLevelIndex] = {
         ...currentComponent,
         ...updates,
         // Ensure required properties are always present, but use updated data if provided
@@ -559,6 +585,33 @@ const updateComponent = (updates: Partial<ComponentInstance>) => {
         size: updates.size || currentComponent.size
       }
     }
+    return
+  }
+
+  // If not found at top level, search in nested components
+  for (const component of pageComponents.value) {
+    if (component.type === 'columns-block' && component.data.columnsData) {
+      for (const column of component.data.columnsData) {
+        if (column.components) {
+          const nestedIndex = column.components.findIndex((c: ComponentInstance) => c.id === selectedComponentId.value)
+          if (nestedIndex !== -1) {
+            const currentComponent = column.components[nestedIndex]
+            column.components[nestedIndex] = {
+              ...currentComponent,
+              ...updates,
+              // Ensure required properties are always present, but use updated data if provided
+              id: currentComponent.id,
+              type: currentComponent.type,
+              data: updates.data || currentComponent.data,
+              position: updates.position || currentComponent.position,
+              size: updates.size || currentComponent.size
+            }
+            return
+          }
+        }
+      }
+    }
+    // Add other layout types here when needed (grid-block, container-block, etc.)
   }
 }
 
@@ -584,7 +637,7 @@ const onNestedComponentAdd = (componentId: string, columnIndex: number, blockTyp
   const newComponent: ComponentInstance = {
     id: `component-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
     type: blockType,
-    data: { ...definition.defaultData },
+    data: deepClone(definition.defaultData),
     position: { x: 0, y: 0 },
     size: { width: 100, height: 100 }
   }
@@ -609,9 +662,16 @@ const onNestedComponentUpdate = (componentId: string, columnIndex: number, neste
   const componentIndex = columnComponents.findIndex((c: ComponentInstance) => c.id === nestedComponentId)
   if (componentIndex === -1) return
 
+  const currentComponent = columnComponents[componentIndex]
   columnComponents[componentIndex] = {
-    ...columnComponents[componentIndex],
-    ...updates
+    ...currentComponent,
+    ...updates,
+    // Ensure required properties are always present
+    id: currentComponent.id,
+    type: currentComponent.type,
+    data: updates.data || currentComponent.data,
+    position: updates.position || currentComponent.position,
+    size: updates.size || currentComponent.size
   }
 }
 
