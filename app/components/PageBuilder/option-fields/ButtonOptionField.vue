@@ -1,5 +1,5 @@
 <template>
-    <div class="space-y-3 p-3 border border-gray-200 rounded-lg bg-gray-50">
+    <div class="space-y-3 p-2 border border-gray-200 rounded-lg bg-gray-50">
         <!-- Button Text -->
         <div>
             <UInput v-model="props.modelValue.value" placeholder="Enter button text" class="w-full" />
