@@ -6,6 +6,7 @@ import HeadingOptionField from './option-fields/HeadingOptionField.vue'
 import ButtonOptionField from './option-fields/ButtonOptionField.vue'
 import SimpleTextContentOptionFieldCopy from './option-fields/SimpleTextContentOptionField copy.vue'
 import ImageOptionField from './option-fields/ImageOptionField.vue'
+import ColumnsOptionField from './option-fields/ColumnsOptionField.vue'
 
 interface Props {
   component: ComponentDefinition & {
@@ -187,6 +188,10 @@ const updateSpacingOption = (name: string, value: any) => {
             <!-- Spacing Box -->
             <SpacingBox v-else-if="option.type === 'spacingBox'" :modelValue="getSpacingValue(option.name)"
               @update:modelValue="updateSpacingOption(option.name, $event)" />
+
+            <!-- Columns Option Field -->
+            <ColumnsOptionField v-else-if="option.type === 'columns'" :modelValue="getOptionValues(option.name)"
+              @update:modelValue="updateOptionValues(option.name, $event)" />
 
             <!-- Unsupported Type -->
             <div v-else class="text-red-500 text-sm">

@@ -50,6 +50,7 @@ export const optionTypes = {
   json: createOptionType('json'),
   spacingBox: createOptionType('spacingBox'),
   button: createOptionType('button'),
+  columns: createOptionType('columns'),
   
   select: (name: string, label: string, options: { label: string; value: any }[], config: Partial<ComponentOption> = {}): ComponentOption => ({
     name,

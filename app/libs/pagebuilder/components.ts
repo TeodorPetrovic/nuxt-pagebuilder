@@ -123,45 +123,35 @@ const columnsBlockDefinition = createComponentDefinition({
   description: 'Multi-column layout with customizable columns',
   component: ColumnsBlock,
   schema: [
-    optionTypes.select('columnCount', 'Number of Columns', [
-      { label: '1 Column', value: 1 },
-      { label: '2 Columns', value: 2 },
-      { label: '3 Columns', value: 3 },
-      { label: '4 Columns', value: 4 }
-    ]),
-    optionTypes.select('gap', 'Column Gap', [
-      { label: 'None', value: 'none' },
-      { label: 'Small', value: 'sm' },
-      { label: 'Medium', value: 'md' },
-      { label: 'Large', value: 'lg' },
-      { label: 'Extra Large', value: 'xl' }
-    ])
+    optionTypes.columns('columns', 'Column Settings', { description: 'Configure column count and spacing' })
   ],
   defaultData: {
-    columns: [
+    columns: {
+      columnCount: 2,
+      gap: 'md'
+    },
+    columnsData: [
       { id: 'col-1', width: 50, components: [] },
       { id: 'col-2', width: 50, components: [] }
-    ],
-    columnCount: 2,
-    gap: 'md'
+    ]
   },
   // Custom data updater for dynamic column changes
   updateData: (oldData: any, newData: any) => {
-    const oldCount = oldData.columnCount || 2
-    const newCount = newData.columnCount || 2
+    const oldCount = oldData.columns?.columnCount || oldData.columnCount || 2
+    const newCount = newData.columns?.columnCount || newData.columnCount || 2
     
     if (oldCount !== newCount) {
       // Generate new columns array based on new count
-      const newColumns = []
+      const newColumnsData = []
       for (let i = 0; i < newCount; i++) {
-        const existingColumn = oldData.columns?.[i]
-        newColumns.push({
+        const existingColumn = oldData.columnsData?.[i] || oldData.columns?.[i]
+        newColumnsData.push({
           id: existingColumn?.id || `col-${i + 1}`,
           width: existingColumn?.width || Math.floor(100 / newCount),
           components: existingColumn?.components || []
         })
       }
-      newData.columns = newColumns
+      newData.columnsData = newColumnsData
     }
     
     return newData

@@ -17,10 +17,6 @@ const emits = defineEmits<{
   (e: 'update:modelValue', value: TextProps): void
 }>()
 
-const bold = ref(props.modelValue.bold)
-const italic = ref(props.modelValue.italic)
-const underline = ref(props.modelValue.underline)
-
 </script>
 
 <template>
