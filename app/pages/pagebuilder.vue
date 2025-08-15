@@ -207,7 +207,13 @@
                     class="border-2 border-transparent hover:border-blue-300 rounded-lg p-4 transition-colors cursor-move"
                     :class="{ 'border-blue-500': selectedComponentId === component.id }" draggable="true"
                     @dragstart="onComponentDragStart($event, component, index)" @click="selectComponent(component.id)">
-                    <ComponentRenderer :component="component" />
+                    <ComponentRenderer 
+                      :component="component" 
+                      @component-add="onNestedComponentAdd"
+                      @component-update="onNestedComponentUpdate"
+                      @component-remove="onNestedComponentRemove"
+                      @component-select="selectComponent"
+                    />
                   </div>
                 </div>
 
@@ -565,6 +571,66 @@ const startDrag = (id: string, event: MouseEvent) => {
 const onDragEnd = () => {
   isDragging.value = false
   dragTarget.value = null
+}
+
+// Nested component handlers
+const onNestedComponentAdd = (componentId: string, columnIndex: number, blockType: string) => {
+  const parentComponent = pageComponents.value.find(c => c.id === componentId)
+  if (!parentComponent || parentComponent.type !== 'columns-block') return
+
+  const definition = componentRegistryInstance.get(blockType)
+  if (!definition) return
+
+  const newComponent: ComponentInstance = {
+    id: `component-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+    type: blockType,
+    data: { ...definition.defaultData },
+    position: { x: 0, y: 0 },
+    size: { width: 100, height: 100 }
+  }
+
+  // Add component to the specific column
+  if (!parentComponent.data.columnsData[columnIndex].components) {
+    parentComponent.data.columnsData[columnIndex].components = []
+  }
+  parentComponent.data.columnsData[columnIndex].components.push(newComponent)
+
+  // Select the new component
+  selectComponent(newComponent.id)
+}
+
+const onNestedComponentUpdate = (componentId: string, columnIndex: number, nestedComponentId: string, updates: any) => {
+  const parentComponent = pageComponents.value.find(c => c.id === componentId)
+  if (!parentComponent || parentComponent.type !== 'columns-block') return
+
+  const columnComponents = parentComponent.data.columnsData[columnIndex]?.components
+  if (!columnComponents) return
+
+  const componentIndex = columnComponents.findIndex((c: ComponentInstance) => c.id === nestedComponentId)
+  if (componentIndex === -1) return
+
+  columnComponents[componentIndex] = {
+    ...columnComponents[componentIndex],
+    ...updates
+  }
+}
+
+const onNestedComponentRemove = (componentId: string, columnIndex: number, nestedComponentId: string) => {
+  const parentComponent = pageComponents.value.find(c => c.id === componentId)
+  if (!parentComponent || parentComponent.type !== 'columns-block') return
+
+  const columnComponents = parentComponent.data.columnsData[columnIndex]?.components
+  if (!columnComponents) return
+
+  const componentIndex = columnComponents.findIndex((c: ComponentInstance) => c.id === nestedComponentId)
+  if (componentIndex !== -1) {
+    columnComponents.splice(componentIndex, 1)
+  }
+
+  // Clear selection if removed component was selected
+  if (selectedComponentId.value === nestedComponentId) {
+    selectedComponentId.value = null
+  }
 }
 
 // Component drag start handler for reordering

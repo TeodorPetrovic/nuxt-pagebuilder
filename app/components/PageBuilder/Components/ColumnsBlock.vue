@@ -1,8 +1,12 @@
 <script setup lang="ts">
+import { computed } from 'vue'
+import ComponentRenderer from '../ComponentRenderer.vue'
+import type { ComponentInstance } from '~/libs/pagebuilder/types'
+
 interface Column {
   id: string
   width: number
-  components: any[]
+  components: ComponentInstance[]
 }
 
 interface Props {
@@ -17,6 +21,13 @@ interface Props {
 
 const props = defineProps<Props>()
 
+const emit = defineEmits<{
+  'component-add': [columnIndex: number, componentData: any]
+  'component-update': [columnIndex: number, componentId: string, updates: any]
+  'component-remove': [columnIndex: number, componentId: string]
+  'component-select': [componentId: string]
+}>()
+
 const containerClass = computed(() => {
   const gapClass = {
     'none': 'gap-0',
@@ -29,6 +40,31 @@ const containerClass = computed(() => {
   return `w-full grid ${gapClass} grid-cols-1 sm:grid-cols-${Math.min(props.data.columns.columnCount, 2)} md:grid-cols-${props.data.columns.columnCount}`
 })
 
+// Drag and drop handlers
+const onColumnDrop = (event: DragEvent, columnIndex: number) => {
+  event.preventDefault()
+  const blockType = event.dataTransfer?.getData('block-type')
+  if (blockType) {
+    emit('component-add', columnIndex, blockType)
+  }
+}
+
+const onColumnDragOver = (event: DragEvent) => {
+  event.preventDefault()
+}
+
+const onComponentClick = (componentId: string) => {
+  emit('component-select', componentId)
+}
+
+const onComponentUpdate = (columnIndex: number, componentId: string, updates: any) => {
+  emit('component-update', columnIndex, componentId, updates)
+}
+
+const onComponentRemove = (columnIndex: number, componentId: string) => {
+  emit('component-remove', columnIndex, componentId)
+}
+
 
 </script>
 
@@ -39,19 +75,49 @@ const containerClass = computed(() => {
       :key="column.id"
       class="min-h-[200px]"
     >
-      <div v-if="!column.components || column.components.length === 0" 
-           class="h-full min-h-[200px] border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center bg-gray-50 transition-all duration-200 hover:bg-gray-100 hover:border-gray-400">
-        <div class="text-center">
-          <UIcon name="i-lucide-columns" class="w-8 h-8 mx-auto mb-2 text-gray-400" />
-          <p class="text-sm text-gray-500">Empty Column</p>
-          <p class="text-xs text-gray-400">Column {{ index + 1 }}</p>
+      <div class="h-full min-h-[200px] relative">
+        <!-- Empty Column State -->
+        <div v-if="!column.components || column.components.length === 0" 
+             class="h-full min-h-[200px] border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center bg-gray-50 transition-all duration-200 hover:bg-gray-100 hover:border-gray-400"
+             @dragover="onColumnDragOver"
+             @drop="onColumnDrop($event, index)">
+          <div class="text-center">
+            <UIcon name="i-lucide-columns" class="w-8 h-8 mx-auto mb-2 text-gray-400" />
+            <p class="text-sm text-gray-500">Empty Column</p>
+            <p class="text-xs text-gray-400">Drop components here</p>
+          </div>
         </div>
-      </div>
-      
-      <div v-else class="min-h-[200px]">
-        <!-- This will be populated by the page builder when components are added -->
-        <div class="text-gray-400 text-sm text-center py-4 italic">
-          Column {{ index + 1 }} content
+        
+        <!-- Column with Components -->
+        <div v-else class="min-h-[200px] space-y-2">
+          <div v-for="component in column.components" :key="component.id" class="relative group">
+            <div class="border border-transparent rounded-lg hover:border-blue-300 transition-colors">
+              <ComponentRenderer 
+                :component="component"
+                @click="onComponentClick(component.id)"
+              />
+            </div>
+            
+            <!-- Component Toolbar -->
+            <div class="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+              <div class="flex items-center space-x-1 bg-white border border-gray-200 rounded shadow-sm p-1">
+                <UButton variant="ghost" size="xs" icon="i-lucide-settings"
+                  @click="onComponentClick(component.id)" />
+                <UButton variant="ghost" size="xs" icon="i-lucide-trash-2" color="error"
+                  @click="onComponentRemove(index, component.id)" />
+              </div>
+            </div>
+          </div>
+          
+          <!-- Drop zone at bottom of column -->
+          <div class="h-8 border-2 border-dashed border-gray-200 rounded-lg flex items-center justify-center bg-gray-50 hover:border-blue-400 hover:bg-blue-50 transition-all duration-200"
+               @dragover="onColumnDragOver"
+               @drop="onColumnDrop($event, index)">
+            <div class="flex items-center gap-1 text-gray-400 text-xs">
+              <UIcon name="i-lucide-plus" class="w-3 h-3" />
+              <span>Drop here</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
