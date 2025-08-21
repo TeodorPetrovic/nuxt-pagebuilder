@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 
 interface Props {
   data: {
@@ -52,8 +53,18 @@ interface Props {
 
 const props = defineProps<Props>()
 
-const alignmentClass = computed(() => `text-${props.data.alignment || 'left'}`)
-const buttonAlignmentClass = computed(() => `text-${props.data.button?.alignment || props.data.alignment || 'left'}`)
+const alignmentClass = computed(() => {
+  const alignment = props.data.alignment || 'left'
+  return `text-${alignment}`
+})
+
+// Button container styles (for proper alignment)
+const buttonContainerStyles = computed(() => {
+  const buttonAlignment = props.data.button?.alignment || props.data.alignment || 'left'
+  return {
+    textAlign: buttonAlignment as 'left' | 'center' | 'right' | 'justify'
+  }
+})
 
 // Container styles (spacing)
 const containerStyles = computed(() => {
@@ -76,13 +87,12 @@ const headingStyles = computed(() => {
     fontSize: `${props.data.heading?.size || 32}px`,
     color: props.data.heading?.color || '#1f2937',
     margin: '0',
-    lineHeight: '1.2'
+    lineHeight: '1.2',
+    textAlign: props.data.alignment || 'left'
   }
   if (props.data.heading?.bold) styles.fontWeight = 'bold'
   if (props.data.heading?.italic) styles.fontStyle = 'italic'
-  let textDecoration = 'none'
-  if (props.data.heading?.underline) textDecoration = 'underline'
-  if (textDecoration !== 'none') styles.textDecoration = textDecoration
+  if (props.data.heading?.underline) styles.textDecoration = 'underline'
   
   return styles
 })
@@ -93,7 +103,8 @@ const textStyles = computed(() => {
     fontSize: `${props.data.content.size || 16}px`,
     color: props.data.content.color || '#4b5563',
     lineHeight: '1.6',
-    margin: '0'
+    margin: '0',
+    textAlign: props.data.alignment || 'left'
   }
   if (props.data.content.bold) styles.fontWeight = 'bold'
   if (props.data.content.italic) styles.fontStyle = 'italic'
@@ -115,20 +126,20 @@ const isValidUrl = (url?: string) => {
 </script>
 
 <template>
-  <div class="text-block" :class="alignmentClass" :style="containerStyles">
-    <div v-if="data.heading?.value" class="text-block-heading mb-3">
+  <div :style="containerStyles">
+    <div v-if="data.heading?.value" class="mb-3">
       <h2 :style="headingStyles">
         {{ data.heading.value }}
       </h2>
     </div>
     
-    <div v-if="data.content.value" class="text-block-content">
+    <div v-if="data.content.value">
       <p :style="textStyles">
         {{ data.content.value }}
       </p>
     </div>
     
-    <div v-if="data.button?.value" class="text-block-button mt-4" :class="buttonAlignmentClass">
+    <div v-if="data.button?.value" class="mt-4" :style="buttonContainerStyles">
       <!-- Link Button (valid URL only) -->
       <UButton
         v-if="isValidUrl(data.button.url)"

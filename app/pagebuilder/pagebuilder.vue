@@ -345,14 +345,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from 'vue'
-import { componentRegistry } from '~/pagebuilder/core/registry'
-import type { ComponentDefinition, ComponentInstance } from '~/pagebuilder/core/types'
-import { deepClone } from '~/pagebuilder/core/utils'
-import ComponentRenderer from '~/pagebuilder/editor/ComponentRenderer.vue'
-import ComponentOptionsPanel from '~/pagebuilder/editor/panels/ComponentOptionsPanel.vue'
+import { componentRegistry } from './core/registry'
+import type { ComponentInstance } from './core/types'
+import { deepClone } from './core/utils'
+import ComponentRenderer from './editor/ComponentRenderer.vue'
+import ComponentOptionsPanel from './editor/panels/ComponentOptionsPanel.vue'
 // Import component definitions to register them
-import '~/pagebuilder/definitions/index'
+import './definitions/index'
 
 // Set the layout for this page
 definePageMeta({

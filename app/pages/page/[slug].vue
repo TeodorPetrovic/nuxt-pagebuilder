@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import type { ComponentInstance } from '~/libs/pagebuilder/types'
-import ComponentRenderer from '~/components/PageBuilder/ComponentRenderer.vue'
+import type { ComponentInstance } from '~/pagebuilder/core/types'
+import ComponentRenderer from '~/pagebuilder/editor/ComponentRenderer.vue'
 
 // Get the slug from the route
 const route = useRoute()
@@ -21,12 +21,7 @@ const pageData = ref<{
 
 const notFound = ref(false)
 
-// Load page data immediately (SSR compatible)
 const loadPageData = () => {
-  // In a real app, you would fetch the page data from your API:
-  // const data = await $fetch(`/api/pages/${slug}`)
-  
-  // Check localStorage for saved data
   const savedData = localStorage.getItem(`page-${slug}`)
   
   if (savedData) {

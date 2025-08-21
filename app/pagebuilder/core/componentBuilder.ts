@@ -1,6 +1,5 @@
 import type { ComponentDefinition, ComponentOption } from './types'
 
-// Helper function to create component definitions easily
 export function createComponentDefinition(config: {
   name: string
   displayName: string

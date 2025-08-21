@@ -66,10 +66,11 @@ export function alignmentOption(name: string = 'alignment', label: string = 'Ali
   return optionTypes.select(name, label, [
     { label: 'Left', value: 'left' },
     { label: 'Center', value: 'center' },
-    { label: 'Right', value: 'right' }
+    { label: 'Right', value: 'right' },
+    { label: 'Justify', value: 'justify' }
   ], {
     defaultValue: 'left',
-    description: 'Set alignment alignment'
+    description: 'Set text alignment'
   })
 }
 

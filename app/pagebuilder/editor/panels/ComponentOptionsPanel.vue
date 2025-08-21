@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { ComponentDefinition } from '~/libs/pagebuilder/types'
-import SpacingBox from './SpacingBox.vue'
-import HeadingOptionField from './option-fields/HeadingOptionField.vue'
-import ButtonOptionField from './option-fields/ButtonOptionField.vue'
-import SimpleTextContentOptionFieldCopy from './option-fields/SimpleTextContentOptionField copy.vue'
-import ImageOptionField from './option-fields/ImageOptionField.vue'
-import ColumnsOptionField from './option-fields/ColumnsOptionField.vue'
+import type { ComponentDefinition } from '~/pagebuilder/core/types'
+import SpacingBox from '../option-fields/SpacingBox.vue'
+import HeadingOptionField from '../option-fields/HeadingOptionField.vue'
+import ButtonOptionField from '../option-fields/ButtonOptionField.vue'
+import SimpleTextContentOptionFieldCopy from '../option-fields/SimpleTextContentOptionField copy.vue'
+import ImageOptionField from '../option-fields/ImageOptionField.vue'
+import ColumnsOptionField from '../option-fields/ColumnsOptionField.vue'
 
 interface Props {
   component: ComponentDefinition & {
@@ -140,9 +140,6 @@ const updateSpacingOption = (name: string, value: any) => {
         <template #content>
           <div class="mt-1 p-2 border border-gray-200 rounded-lg bg-gray-50">
             <!-- Text Input -->
-            <!-- <UInput v-if="option.type === 'text'" v-model="component.data[option.name]"
-              :placeholder="option.description" class="w-full"
-              @update:model-value="updateOption(option.name, $event)" /> -->
             <SimpleTextContentOptionFieldCopy v-if="option.type === 'text'" :modelValue="getOptionValues(option.name)"
               @update:modelValue="updateOptionValues(option.name, $event)" />
 
@@ -156,8 +153,9 @@ const updateSpacingOption = (name: string, value: any) => {
               @update:model-value="updateOption(option.name, $event)" />
 
             <!-- Select Dropdown -->
+             <!-- TODO FIX items definition-->
             <USelect v-else-if="option.type === 'select' && option.options" v-model="component.data[option.name]"
-              :options="option.options" :placeholder="option.description" class="w-full"
+              :items="option.options" :placeholder="option.description" class="w-full"
               @update:model-value="updateOption(option.name, $event)" />
 
             <!-- Color Picker -->

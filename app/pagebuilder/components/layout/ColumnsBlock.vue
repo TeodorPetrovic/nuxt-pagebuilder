@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import ComponentRenderer from '../ComponentRenderer.vue'
-import type { ComponentInstance } from '~/libs/pagebuilder/types'
+import ComponentRenderer from '../../editor/ComponentRenderer.vue'
+import type { ComponentInstance } from '~/pagebuilder/core/types'
 
 interface Column {
   id: string

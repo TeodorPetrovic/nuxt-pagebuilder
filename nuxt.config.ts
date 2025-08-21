@@ -9,10 +9,8 @@ export default defineNuxtConfig({
     "@nuxt/image",
     "@nuxt/ui"
   ],
-
+  nitro: {
+    preset: 'bun'
+  },
   css: [ "~/assets/css/main.css"],
-  
-  ui: {
-    icons: ['lucide']
-  }
 })
