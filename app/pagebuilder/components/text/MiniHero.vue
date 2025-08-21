@@ -88,7 +88,8 @@ const headingStyles = computed(() => {
     color: props.data.heading?.color || '#1f2937',
     margin: '0',
     lineHeight: '1.2',
-    textAlign: props.data.alignment || 'left'
+    textAlign: props.data.alignment || 'left',
+    whiteSpace: 'pre-wrap'
   }
   if (props.data.heading?.bold) styles.fontWeight = 'bold'
   if (props.data.heading?.italic) styles.fontStyle = 'italic'
@@ -104,7 +105,8 @@ const textStyles = computed(() => {
     color: props.data.content.color || '#4b5563',
     lineHeight: '1.6',
     margin: '0',
-    textAlign: props.data.alignment || 'left'
+    textAlign: props.data.alignment || 'left',
+    whiteSpace: 'pre-wrap'
   }
   if (props.data.content.bold) styles.fontWeight = 'bold'
   if (props.data.content.italic) styles.fontStyle = 'italic'

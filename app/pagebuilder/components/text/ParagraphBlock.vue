@@ -21,7 +21,8 @@ const textStyles = computed(() => {
     fontSize: `${props.data.content.size || 16}px`,
     color: props.data.content.color || '#4b5563',
     lineHeight: '1.6',
-    margin: '0'
+    margin: '0',
+    whiteSpace: 'pre-wrap'
   }
   if (props.data.content.bold) styles.fontWeight = 'bold'
   if (props.data.content.italic) styles.fontStyle = 'italic'
