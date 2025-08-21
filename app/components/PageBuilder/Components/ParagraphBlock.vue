@@ -33,7 +33,7 @@ const textStyles = computed(() => {
 
 <template>
   <div class="w-full">
-    <p :class="textStyles">
+    <p :style="textStyles" :class="{ 'underline': data.content.underline }">
       {{ data.content.value}}
     </p>
   </div>

@@ -53,18 +53,15 @@ const onColumnDragOver = (event: DragEvent) => {
   event.preventDefault()
 }
 
-const onComponentClick = (componentId: string) => {
+const onComponentClick = (event: Event, componentId: string) => {
+  event.stopPropagation()
   emit('component-select', componentId)
 }
 
-const onComponentUpdate = (columnIndex: number, componentId: string, updates: any) => {
-  emit('component-update', columnIndex, componentId, updates)
-}
-
-const onComponentRemove = (columnIndex: number, componentId: string) => {
+const onComponentRemove = (event: Event, columnIndex: number, componentId: string) => {
+  event.stopPropagation()
   emit('component-remove', columnIndex, componentId)
 }
-
 
 </script>
 
@@ -92,7 +89,7 @@ const onComponentRemove = (columnIndex: number, componentId: string) => {
         <div v-else class="min-h-[200px] space-y-2">
           <div v-for="component in column.components" :key="component.id" class="relative group">
             <div class="border border-transparent rounded-lg hover:border-blue-300 transition-colors"
-                 @click.stop="onComponentClick(component.id)">
+                 @click="onComponentClick($event, component.id)">
               <ComponentRenderer 
                 :component="component"
               />
@@ -102,20 +99,10 @@ const onComponentRemove = (columnIndex: number, componentId: string) => {
             <div class="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity z-10">
               <div class="flex items-center space-x-1 bg-white border border-gray-200 rounded shadow-sm p-1">
                 <UButton variant="ghost" size="xs" icon="i-lucide-settings"
-                  @click="onComponentClick(component.id)" />
+                  @click="onComponentClick($event, component.id)" />
                 <UButton variant="ghost" size="xs" icon="i-lucide-trash-2" color="error"
-                  @click="onComponentRemove(index, component.id)" />
+                  @click="onComponentRemove($event, index, component.id)" />
               </div>
-            </div>
-          </div>
-          
-          <!-- Drop zone at bottom of column -->
-          <div class="h-8 border-2 border-dashed border-gray-200 rounded-lg flex items-center justify-center bg-gray-50 hover:border-blue-400 hover:bg-blue-50 transition-all duration-200"
-               @dragover="onColumnDragOver"
-               @drop="onColumnDrop($event, index)">
-            <div class="flex items-center gap-1 text-gray-400 text-xs">
-              <UIcon name="i-lucide-plus" class="w-3 h-3" />
-              <span>Drop here</span>
             </div>
           </div>
         </div>

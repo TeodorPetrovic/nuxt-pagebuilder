@@ -21,28 +21,62 @@ const emits = defineEmits<{
 
 <template>
   <div>
-    <UTextarea class="w-full" :maxrows="6" autoresize v-model="props.modelValue.value" />
+    <UTextarea 
+      class="w-full" 
+      :maxrows="6" 
+      autoresize 
+      :model-value="props.modelValue.value" 
+      @update:model-value="emits('update:modelValue', { ...props.modelValue, value: $event })" 
+    />
     <div class="flex items-center gap-2 mt-1">
       <UButtonGroup>
-        <UButton :color="props.modelValue.bold ? 'primary' : 'neutral'" square icon="i-lucide-bold"
-          :aria-pressed="props.modelValue.bold" @click="props.modelValue.bold = !props.modelValue.bold" />
-        <UButton :color="props.modelValue.italic ? 'primary' : 'neutral'" square icon="i-lucide-italic"
-          :aria-pressed="props.modelValue.italic" @click="props.modelValue.italic = !props.modelValue.italic" />
-        <UButton :color="props.modelValue.underline ? 'primary' : 'neutral'" square icon="i-lucide-underline"
+        <UButton 
+          :color="props.modelValue.bold ? 'primary' : 'neutral'" 
+          square 
+          icon="i-lucide-bold"
+          :aria-pressed="props.modelValue.bold" 
+          @click="emits('update:modelValue', { ...props.modelValue, bold: !props.modelValue.bold })" 
+        />
+        <UButton 
+          :color="props.modelValue.italic ? 'primary' : 'neutral'" 
+          square 
+          icon="i-lucide-italic"
+          :aria-pressed="props.modelValue.italic" 
+          @click="emits('update:modelValue', { ...props.modelValue, italic: !props.modelValue.italic })" 
+        />
+        <UButton 
+          :color="props.modelValue.underline ? 'primary' : 'neutral'" 
+          square 
+          icon="i-lucide-underline"
           :aria-pressed="props.modelValue.underline"
-          @click="props.modelValue.underline = !props.modelValue.underline" />
+          @click="emits('update:modelValue', { ...props.modelValue, underline: !props.modelValue.underline })" 
+        />
       </UButtonGroup>
-      <UInputNumber class="w-1/4 mt-[1px]" size="sm" v-model="props.modelValue.size" orientation="vertical" />
+      <UInputNumber 
+        class="w-1/4 mt-[1px]" 
+        size="sm" 
+        :model-value="props.modelValue.size" 
+        @update:model-value="emits('update:modelValue', { ...props.modelValue, size: $event })"
+        orientation="vertical" 
+      />
       <UPopover>
         <UButton label="Choose color" color="neutral" variant="outline" size="sm" class="mt-[1px]">
           <template #leading>
-            <span :style="{ backgroundColor: props.modelValue.color }" class="size-3 rounded-full" />
+            <span :style="{ backgroundColor: props.modelValue.color || '#4b5563' }" class="size-3 rounded-full" />
           </template>
         </UButton>
 
         <template #content>
-          <UColorPicker v-model="props.modelValue.color" class="p-2" />
-          <UInput v-model="props.modelValue.color" class="p-2" />
+          <UColorPicker 
+            :model-value="props.modelValue.color || '#4b5563'" 
+            @update:model-value="emits('update:modelValue', { ...props.modelValue, color: $event as string })"
+            class="p-2" 
+          />
+          <UInput 
+            :model-value="props.modelValue.color || '#4b5563'" 
+            @update:model-value="emits('update:modelValue', { ...props.modelValue, color: $event as string })"
+            class="p-2" 
+          />
         </template>
       </UPopover>
     </div>

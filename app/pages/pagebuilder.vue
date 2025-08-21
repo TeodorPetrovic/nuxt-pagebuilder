@@ -8,16 +8,13 @@
           <UButton :variant="isEditing ? 'solid' : 'outline'" color="primary" size="sm" @click="toggleEditing">
             {{ isEditing ? 'Preview' : 'Edit' }}
           </UButton>
+          <UButton color="success" size="sm" @click="savePage">
+            Save Page
+          </UButton>
+          <UButton variant="outline" size="sm" @click="viewPage" :disabled="!pageSlug">
+            View Page
+          </UButton>
         </div>
-      </div>
-
-      <div class="flex items-center space-x-2">
-        <UButton variant="outline" color="neutral" size="sm">
-          Save Draft
-        </UButton>
-        <UButton color="primary" size="sm">
-          Publish
-        </UButton>
       </div>
     </div>
 
@@ -150,7 +147,7 @@
       </div>
 
       <!-- Center Canvas -->
-      <div class="flex-1 bg-white relative overflow-auto">
+      <div class="flex-1 bg-white relative overflow-auto" @click="clearSelection">
         <div class="min-h-full p-8">
           <!-- Functional Editor Canvas -->
           <div class="max-w-4xl mx-auto">
@@ -204,9 +201,11 @@
 
                   <!-- Component Content -->
                   <div
-                    class="border-2 border-transparent hover:border-blue-300 rounded-lg p-4 transition-colors cursor-move"
-                    :class="{ 'border-blue-500': selectedComponentId === component.id }" draggable="true"
-                    @dragstart="onComponentDragStart($event, component, index)" @click.self="selectComponent(component.id)">
+                    class="border-2 border-transparent hover:border-blue-300 rounded-lg p-4 transition-colors cursor-pointer"
+                    :class="{ 'border-blue-500': selectedComponentId === component.id }" 
+                    draggable="true"
+                    @dragstart="onComponentDragStart($event, component, index)" 
+                    @click="handleComponentClick($event, component.id)">
                     <ComponentRenderer 
                       :component="component" 
                       @component-add="onNestedComponentAdd"
@@ -345,7 +344,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { componentRegistry } from '~/libs/pagebuilder/registry'
 import type { ComponentDefinition, ComponentInstance } from '~/libs/pagebuilder/types'
 import { deepClone } from '~/libs/pagebuilder/utils'
@@ -374,6 +373,53 @@ const selectedComponentId = ref<string | null>(null)
 const pageComponents = ref<ComponentInstance[]>([])
 const dragTarget = ref<string | null>(null)
 const isDragging = ref(false)
+
+// Load saved page data on mount (for persistence across page refreshes)
+onMounted(() => {
+  // Try to load the current page being edited
+  const currentPageKey = localStorage.getItem('current-page-editor')
+  if (currentPageKey) {
+    const savedData = localStorage.getItem(currentPageKey)
+    if (savedData) {
+      try {
+        const pageData = JSON.parse(savedData)
+        if (pageData.metadata && pageData.components) {
+          // Restore page metadata
+          pageTitle.value = pageData.metadata.title || pageTitle.value
+          pageSlug.value = pageData.metadata.slug || pageSlug.value
+          pageTemplate.value = pageData.metadata.template || pageTemplate.value
+          
+          // Restore components
+          pageComponents.value = pageData.components || []
+          
+          console.log('📥 Restored page from localStorage:', pageData.metadata.title)
+        }
+      } catch (error) {
+        console.error('Error loading saved page:', error)
+      }
+    }
+  }
+})
+
+// Auto-save functionality - save to localStorage whenever data changes
+watch([pageComponents, pageTitle, pageSlug, pageTemplate], () => {
+  if (pageSlug.value) {
+    const pageData = {
+      metadata: {
+        title: pageTitle.value,
+        slug: pageSlug.value,
+        template: pageTemplate.value,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      },
+      components: pageComponents.value
+    }
+    
+    const pageKey = `page-${pageSlug.value}`
+    localStorage.setItem(pageKey, JSON.stringify(pageData))
+    localStorage.setItem('current-page-editor', pageKey)
+  }
+}, { deep: true })
 
 // Tabs
 const tabs = [
@@ -554,6 +600,12 @@ const selectComponent = (id: string) => {
   activePropertyTab.value = 'block'
 }
 
+const handleComponentClick = (event: Event, componentId: string) => {
+  // Always select the clicked component, regardless of nesting
+  event.stopPropagation()
+  selectComponent(componentId)
+}
+
 const clearSelection = () => {
   selectedComponentId.value = null
   activePropertyTab.value = 'document'
@@ -700,6 +752,53 @@ const onComponentDragStart = (event: DragEvent, component: ComponentInstance, in
     event.dataTransfer.effectAllowed = 'move'
   }
   isDragging.value = true
+}
+
+// Save page functionality
+const savePage = () => {
+  const pageData = {
+    metadata: {
+      title: pageTitle.value,
+      slug: pageSlug.value,
+      template: pageTemplate.value,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    },
+    components: pageComponents.value
+  }
+  
+  // Pretty print the JSON to console
+  console.log('=== SAVED PAGE DATA ===')
+  console.log(JSON.stringify(pageData, null, 2))
+  
+  // Save to localStorage for demo purposes
+  if (pageSlug.value) {
+    const pageKey = `page-${pageSlug.value}`
+    localStorage.setItem(pageKey, JSON.stringify(pageData))
+    // Also track this as the current page being edited
+    localStorage.setItem('current-page-editor', pageKey)
+  }
+  
+  // Show a notification with the data
+  alert(`Page saved! 
+  
+📄 Title: ${pageTitle.value}
+🔗 Slug: ${pageSlug.value}
+📋 Template: ${pageTemplate.value}
+🧩 Components: ${pageComponents.value.length}
+
+Check the browser console to see the full JSON data.`)
+  
+  // In a real app, you would send this to your API:
+  // await $fetch('/api/pages', { method: 'POST', body: pageData })
+}
+
+// View page functionality
+const viewPage = () => {
+  if (pageSlug.value) {
+    // Navigate to the page viewer
+    navigateTo(`/page/${pageSlug.value}`)
+  }
 }
 
 
