@@ -20,6 +20,7 @@ interface Props {
     fullWidth: boolean
     autoFit: boolean
   }
+  isEditing?: boolean
 }
 
 const props = defineProps<Props>()
@@ -119,8 +120,13 @@ watch([() => props.data.rows, () => props.data.columns], ([newRows, newColumns],
       >
         <div class="h-full min-h-[200px] relative">
           <div v-if="!cell.components || cell.components.length === 0" 
-               class="h-full min-h-[200px] border border-dashed border-gray-300 rounded-md flex items-center justify-center bg-gray-50 transition-all duration-200 hover:bg-gray-100 hover:border-gray-400">
-            <div class="text-center">
+               :class="[
+                 'h-full min-h-[200px] flex items-center justify-center',
+                 isEditing 
+                   ? 'border border-dashed border-gray-300 rounded-md bg-gray-50 transition-all duration-200 hover:bg-gray-100 hover:border-gray-400'
+                   : 'bg-transparent'
+               ]">
+            <div v-if="isEditing" class="text-center">
               <UIcon name="i-lucide-grid" class="w-6 h-6 mx-auto mb-2 text-gray-400" />
               <p class="text-xs text-gray-500">Cell {{ index + 1 }}</p>
             </div>
@@ -132,8 +138,8 @@ watch([() => props.data.rows, () => props.data.columns], ([newRows, newColumns],
             </div>
           </div>
           
-          <!-- Drop zone for this cell -->
-          <div class="absolute bottom-0 left-0 right-0 h-8 bg-blue-100/30 border-2 border-dashed border-blue-400 rounded flex items-center justify-center opacity-30 transition-all duration-200 cursor-pointer z-10 hover:opacity-100 hover:bg-blue-200/40" 
+          <!-- Drop zone for this cell (only in editing mode) -->
+          <div v-if="isEditing" class="absolute bottom-0 left-0 right-0 h-8 bg-blue-100/30 border-2 border-dashed border-blue-400 rounded flex items-center justify-center opacity-30 transition-all duration-200 cursor-pointer z-10 hover:opacity-100 hover:bg-blue-200/40" 
                @dragover.prevent 
                @drop="onCellDrop($event, index)"
                @dragenter="onCellDragEnter($event, index)"

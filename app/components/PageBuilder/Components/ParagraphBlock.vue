@@ -25,6 +25,7 @@ const textStyles = computed(() => {
   }
   if (props.data.content.bold) styles.fontWeight = 'bold'
   if (props.data.content.italic) styles.fontStyle = 'italic'
+  if (props.data.content.underline) styles.textDecoration = 'underline'
   
   return styles
 })
@@ -33,7 +34,7 @@ const textStyles = computed(() => {
 
 <template>
   <div class="w-full">
-    <p :style="textStyles" :class="{ 'underline': data.content.underline }">
+    <p :style="textStyles">
       {{ data.content.value}}
     </p>
   </div>

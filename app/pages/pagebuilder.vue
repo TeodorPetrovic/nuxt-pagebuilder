@@ -208,6 +208,7 @@
                     @click="handleComponentClick($event, component.id)">
                     <ComponentRenderer 
                       :component="component" 
+                      :isEditing="isEditing"
                       @component-add="onNestedComponentAdd"
                       @component-update="onNestedComponentUpdate"
                       @component-remove="onNestedComponentRemove"

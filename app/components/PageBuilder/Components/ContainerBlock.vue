@@ -14,6 +14,7 @@ interface Props {
     fullWidth: boolean
     maxWidth: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl' | '4xl' | '5xl' | '6xl' | '7xl' | 'full'
   }
+  isEditing?: boolean
 }
 
 const props = defineProps<Props>()
@@ -116,8 +117,13 @@ const getShadowValue = (shadow: string) => {
   <div class="w-full" :class="containerClass" :style="containerStyles">
     <div class="w-full min-h-[100px]">
       <div v-if="!data.components || data.components.length === 0" 
-           class="h-full min-h-[100px] border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center bg-gray-50 transition-all duration-200 hover:bg-gray-100 hover:border-gray-400">
-        <div class="text-center">
+           :class="[
+             'h-full min-h-[100px] flex items-center justify-center',
+             isEditing 
+               ? 'border-2 border-dashed border-gray-300 rounded-lg bg-gray-50 transition-all duration-200 hover:bg-gray-100 hover:border-gray-400'
+               : 'bg-transparent'
+           ]">
+        <div v-if="isEditing" class="text-center">
           <UIcon name="i-lucide-box" class="w-8 h-8 mx-auto mb-2 text-gray-400" />
           <p class="text-sm text-gray-500">Container</p>
           <p class="text-xs text-gray-400">Add components here</p>

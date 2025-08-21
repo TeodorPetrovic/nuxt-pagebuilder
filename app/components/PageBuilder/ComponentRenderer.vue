@@ -5,6 +5,7 @@ import type { ComponentInstance } from '~/libs/pagebuilder/types'
 
 interface Props {
   component: ComponentInstance
+  isEditing?: boolean
 }
 
 const props = defineProps<Props>()
@@ -44,6 +45,7 @@ const onNestedComponentSelect = (componentId: string) => {
   <component 
     :is="componentComponent" 
     :data="component.data"
+    :isEditing="isEditing"
     @click="$emit('click')"
     @component-add="onNestedComponentAdd"
     @component-update="onNestedComponentUpdate"

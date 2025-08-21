@@ -17,6 +17,7 @@ interface Props {
     }
     columnsData: Column[]
   }
+  isEditing?: boolean
 }
 
 const props = defineProps<Props>()
@@ -75,10 +76,15 @@ const onComponentRemove = (event: Event, columnIndex: number, componentId: strin
       <div class="h-full min-h-[200px] relative">
         <!-- Empty Column State -->
         <div v-if="!column.components || column.components.length === 0" 
-             class="h-full min-h-[200px] border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center bg-gray-50 transition-all duration-200 hover:bg-gray-100 hover:border-gray-400"
-             @dragover="onColumnDragOver"
-             @drop="onColumnDrop($event, index)">
-          <div class="text-center">
+             :class="[
+               'h-full min-h-[200px] flex items-center justify-center',
+               isEditing 
+                 ? 'border-2 border-dashed border-gray-300 rounded-lg bg-gray-50 transition-all duration-200 hover:bg-gray-100 hover:border-gray-400'
+                 : 'bg-transparent'
+             ]"
+             @dragover="isEditing ? onColumnDragOver : undefined"
+             @drop="isEditing ? onColumnDrop($event, index) : undefined">
+          <div v-if="isEditing" class="text-center">
             <UIcon name="i-lucide-columns" class="w-8 h-8 mx-auto mb-2 text-gray-400" />
             <p class="text-sm text-gray-500">Empty Column</p>
             <p class="text-xs text-gray-400">Drop components here</p>
@@ -88,15 +94,20 @@ const onComponentRemove = (event: Event, columnIndex: number, componentId: strin
         <!-- Column with Components -->
         <div v-else class="min-h-[200px] space-y-2">
           <div v-for="component in column.components" :key="component.id" class="relative group">
-            <div class="border border-transparent rounded-lg hover:border-blue-300 transition-colors"
-                 @click="onComponentClick($event, component.id)">
+            <div :class="[
+              isEditing 
+                ? 'border border-transparent rounded-lg hover:border-blue-300 transition-colors cursor-pointer' 
+                : ''
+            ]"
+                 @click="isEditing ? onComponentClick($event, component.id) : undefined">
               <ComponentRenderer 
                 :component="component"
+                :isEditing="isEditing"
               />
             </div>
             
-            <!-- Component Toolbar -->
-            <div class="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+            <!-- Component Toolbar (only in editing mode) -->
+            <div v-if="isEditing" class="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity z-10">
               <div class="flex items-center space-x-1 bg-white border border-gray-200 rounded shadow-sm p-1">
                 <UButton variant="ghost" size="xs" icon="i-lucide-settings"
                   @click="onComponentClick($event, component.id)" />
